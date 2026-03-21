@@ -1,0 +1,26 @@
+## Visual Studio Temporary Files
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Build Results (Thư mục chứa file .exe, .dll sau khi build)
+[Bb]in/
+[Oo]bj/
+
+## NuGet Packages
+packages/
+*.nupkg
+
+## Test Results
+TestResults/
+
+## Thư mục rác của MSBuild
+.msbe/
+*.cache
+*.log
+
+## File tạm của Windows
+Thumbs.db
+desktop.ini

@@ -1,0 +1,28 @@
+Giới thiệu bài toán (2đ)
+1.1	1đ	Liệt kê các chức năng của ứng dụng
+	0.5đ	Miêu tả 1 chức năng chính
+	0.75đ	Miêu tả 2 chức năng chính
+	1đ	Miêu tả 3 chức năng chính
+1.2	1đ	Phân tích sử dụng mẫu thiết kế cho bài toán
+	0.25đ	Phân tích sử dụng 1 mẫu thiết kế chức năng chính của ứng dụng
+	0.5đ	Phân tích sử dụng 2 mẫu thiết kế chức năng chính của ứng dụng
+	0.75đ	Phân tích sử dụng 3 mẫu thiết kế chức năng chính của ứng dụng
+	1đ	Phân tích sử dụng 4 mẫu thiết kế chức năng chính của ứng dụng
+Vẽ lược đồ class các mẫu thiết kế (2đ)
+1	0.5đ	Vẽ sơ đồ class cho 1 mẫu thiết kế chức năng chính của ứng dụng
+2	1đ	Vẽ sơ đồ class cho 2 mẫu thiết kế chức năng chính của ứng dụng
+3	1.5đ	Vẽ sơ đồ class cho 3 mẫu thiết kế chức năng chính của ứng dụng
+4	2đ	Vẽ sơ đồ class cho 4 mẫu thiết kế chức năng chính của ứng dụng
+Hiện thực mẫu (3đ)
+1	0.75đ	Hiện thực cho 1 mẫu thiết kế cho chức năng chính của ứng dụng
+2	1.5đ	Hiện thực cho 2 mẫu thiết kế cho chức năng chính của ứng dụng
+3	2.25đ	Hiện thực cho 3 mẫu thiết kế cho chức năng chính của ứng dụng
+4	3đ	Hiện thực cho 4 mẫu thiết kế cho chức năng chính của ứng dụng
+Lưu trữ dữ liệu & xuất dữ liệu (2đ)	
+1	0.5đ	Vẽ sơ đồ class cho 1 mẫu thiết kế cho lưu trữ dữ liệu
+2	0.5đ	Hiện thực cho 1 mẫu thiết kế cho lưu trữ dữ liệu
+3	0.5đ	Vẽ sơ đồ class cho 1 mẫu xuất dữ liệu
+4	0.5đ	Hiện thực cho 1 mẫu thiết kế cho xuất dữ liệu
+Trình bày giao diện (1đ)
+	0.5đ	Các chức năng minh họa bằng console
+	1đ	Các chức năng minh họa bằng GUI
