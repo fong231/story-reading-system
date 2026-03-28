@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BE.Migrations
 {
     [DbContext(typeof(StoryReaderDbContext))]
-    [Migration("20260316160400_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260328082059_SeedInitialData")]
+    partial class SeedInitialData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,18 +111,6 @@ namespace BE.Migrations
                             CategoryId = 4,
                             IsActive = true,
                             Name = "Trinh Thám"
-                        },
-                        new
-                        {
-                            CategoryId = 5,
-                            IsActive = true,
-                            Name = "Khoa Học Viễn Tưởng"
-                        },
-                        new
-                        {
-                            CategoryId = 6,
-                            IsActive = true,
-                            Name = "Hài Hước"
                         });
                 });
 
@@ -168,6 +156,30 @@ namespace BE.Migrations
                         .IsUnique();
 
                     b.ToTable("Chapters");
+
+                    b.HasData(
+                        new
+                        {
+                            ChapterId = 1,
+                            ChapterNumber = 1,
+                            Content = "Nội dung chương 1...",
+                            IsActive = true,
+                            PublishedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1331),
+                            StoryId = 1,
+                            Title = "Hồi kết bắt đầu",
+                            ViewCount = 0
+                        },
+                        new
+                        {
+                            ChapterId = 2,
+                            ChapterNumber = 1,
+                            Content = "Nội dung chương 1 kinh dị...",
+                            IsActive = true,
+                            PublishedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1335),
+                            StoryId = 2,
+                            Title = "Bóng tối",
+                            ViewCount = 0
+                        });
                 });
 
             modelBuilder.Entity("BE.Models.Comment", b =>
@@ -327,6 +339,19 @@ namespace BE.Migrations
                         .IsUnique();
 
                     b.ToTable("ReadingModes");
+
+                    b.HasData(
+                        new
+                        {
+                            ModeId = -1,
+                            CreatedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1395),
+                            FontFamily = "Georgia",
+                            FontSize = 18,
+                            LineHeight = 1.8m,
+                            NavigationMode = "Scroll",
+                            Theme = "Night",
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("BE.Models.ReadingProgress", b =>
@@ -374,6 +399,20 @@ namespace BE.Migrations
                         .IsUnique();
 
                     b.ToTable("ReadingProgresses");
+
+                    b.HasData(
+                        new
+                        {
+                            ProgressId = -1,
+                            CreatedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1375),
+                            CurrentChapterId = 1,
+                            CurrentStoryId = 1,
+                            LastReadAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1378),
+                            LastReadPosition = 150,
+                            TotalChaptersRead = 1,
+                            TotalStoriesRead = 1,
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("BE.Models.Story", b =>
@@ -436,6 +475,38 @@ namespace BE.Migrations
                     b.HasIndex("ViewCount");
 
                     b.ToTable("Stories");
+
+                    b.HasData(
+                        new
+                        {
+                            StoryId = 1,
+                            AuthorId = 1,
+                            AverageRating = 4.5m,
+                            CategoryId = 1,
+                            CoverImage = "https://picsum.photos/200/300?random=1",
+                            CreatedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1299),
+                            Description = "Truyện hành động hấp dẫn.",
+                            IsActive = true,
+                            Status = "Ongoing",
+                            Title = "Huyền Thoại Sát Thủ",
+                            TotalRatings = 1,
+                            ViewCount = 1000
+                        },
+                        new
+                        {
+                            StoryId = 2,
+                            AuthorId = 1,
+                            AverageRating = 4.0m,
+                            CategoryId = 2,
+                            CoverImage = "https://picsum.photos/200/300?random=2",
+                            CreatedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1312),
+                            Description = "Truyện kinh dị kịch tính.",
+                            IsActive = true,
+                            Status = "Ongoing",
+                            Title = "Tiếng Vọng Đêm Khuya",
+                            TotalRatings = 1,
+                            ViewCount = 500
+                        });
                 });
 
             modelBuilder.Entity("BE.Models.StoryFollower", b =>
@@ -465,6 +536,15 @@ namespace BE.Migrations
                         .IsUnique();
 
                     b.ToTable("StoryFollowers");
+
+                    b.HasData(
+                        new
+                        {
+                            FollowId = -1,
+                            CreatedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1358),
+                            StoryId = 1,
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("BE.Models.User", b =>
@@ -510,29 +590,20 @@ namespace BE.Migrations
                         new
                         {
                             UserId = 1,
-                            CreatedAt = new DateTime(2026, 3, 16, 16, 4, 0, 65, DateTimeKind.Utc).AddTicks(4485),
-                            Email = "admin@example.com",
+                            CreatedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1115),
+                            Email = "author@test.com",
                             IsActive = true,
-                            PasswordHash = "admin123",
-                            Username = "admin"
+                            PasswordHash = "hash123",
+                            Username = "author_admin"
                         },
                         new
                         {
                             UserId = 2,
-                            CreatedAt = new DateTime(2026, 3, 16, 16, 4, 0, 65, DateTimeKind.Utc).AddTicks(4489),
-                            Email = "user1@example.com",
+                            CreatedAt = new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1125),
+                            Email = "reader@test.com",
                             IsActive = true,
-                            PasswordHash = "user123",
-                            Username = "user1"
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            CreatedAt = new DateTime(2026, 3, 16, 16, 4, 0, 65, DateTimeKind.Utc).AddTicks(4491),
-                            Email = "user2@example.com",
-                            IsActive = true,
-                            PasswordHash = "user123",
-                            Username = "user2"
+                            PasswordHash = "hash123",
+                            Username = "reader_01"
                         });
                 });
 

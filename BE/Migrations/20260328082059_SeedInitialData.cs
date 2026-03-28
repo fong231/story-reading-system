@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BE.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class SeedInitialData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -335,9 +335,7 @@ namespace BE.Migrations
                     { 1, true, "Hành Động" },
                     { 2, true, "Kinh Dị" },
                     { 3, true, "Lãng Mạn" },
-                    { 4, true, "Trinh Thám" },
-                    { 5, true, "Khoa Học Viễn Tưởng" },
-                    { 6, true, "Hài Hước" }
+                    { 4, true, "Trinh Thám" }
                 });
 
             migrationBuilder.InsertData(
@@ -345,10 +343,42 @@ namespace BE.Migrations
                 columns: new[] { "UserId", "CreatedAt", "Email", "IsActive", "PasswordHash", "Username" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2026, 3, 16, 16, 4, 0, 65, DateTimeKind.Utc).AddTicks(4485), "admin@example.com", true, "admin123", "admin" },
-                    { 2, new DateTime(2026, 3, 16, 16, 4, 0, 65, DateTimeKind.Utc).AddTicks(4489), "user1@example.com", true, "user123", "user1" },
-                    { 3, new DateTime(2026, 3, 16, 16, 4, 0, 65, DateTimeKind.Utc).AddTicks(4491), "user2@example.com", true, "user123", "user2" }
+                    { 1, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1115), "author@test.com", true, "hash123", "author_admin" },
+                    { 2, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1125), "reader@test.com", true, "hash123", "reader_01" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "ReadingModes",
+                columns: new[] { "ModeId", "CreatedAt", "FontFamily", "FontSize", "LineHeight", "NavigationMode", "Theme", "UpdatedAt", "UserId" },
+                values: new object[] { -1, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1395), "Georgia", 18, 1.8m, "Scroll", "Night", null, 2 });
+
+            migrationBuilder.InsertData(
+                table: "Stories",
+                columns: new[] { "StoryId", "AuthorId", "AverageRating", "CategoryId", "CoverImage", "CreatedAt", "Description", "IsActive", "Status", "Title", "TotalRatings", "UpdatedAt", "ViewCount" },
+                values: new object[,]
+                {
+                    { 1, 1, 4.5m, 1, "https://picsum.photos/200/300?random=1", new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1299), "Truyện hành động hấp dẫn.", true, "Ongoing", "Huyền Thoại Sát Thủ", 1, null, 1000 },
+                    { 2, 1, 4.0m, 2, "https://picsum.photos/200/300?random=2", new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1312), "Truyện kinh dị kịch tính.", true, "Ongoing", "Tiếng Vọng Đêm Khuya", 1, null, 500 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Chapters",
+                columns: new[] { "ChapterId", "ChapterNumber", "Content", "IsActive", "PublishedAt", "StoryId", "Title", "ViewCount" },
+                values: new object[,]
+                {
+                    { 1, 1, "Nội dung chương 1...", true, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1331), 1, "Hồi kết bắt đầu", 0 },
+                    { 2, 1, "Nội dung chương 1 kinh dị...", true, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1335), 2, "Bóng tối", 0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "StoryFollowers",
+                columns: new[] { "FollowId", "CreatedAt", "StoryId", "UserId" },
+                values: new object[] { -1, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1358), 1, 2 });
+
+            migrationBuilder.InsertData(
+                table: "ReadingProgresses",
+                columns: new[] { "ProgressId", "CreatedAt", "CurrentChapterId", "CurrentStoryId", "LastReadAt", "LastReadPosition", "TotalChaptersRead", "TotalStoriesRead", "UpdatedAt", "UserId" },
+                values: new object[] { -1, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1375), 1, 1, new DateTime(2026, 3, 28, 8, 20, 57, 701, DateTimeKind.Utc).AddTicks(1378), 150, 1, 1, null, 2 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Bookmarks_ChapterId",

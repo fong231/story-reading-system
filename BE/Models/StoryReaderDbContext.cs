@@ -224,46 +224,88 @@ namespace BE.Models
             });
 
             // ================================================================
-            // Seed Data - Test Users
+            // Seed Data
             // ================================================================
+            // Users
             modelBuilder.Entity<User>().HasData(
-                new User
-                {
-                    UserId = 1,
-                    Username = "admin",
-                    Email = "admin@example.com",
-                    PasswordHash = "admin123", // Demo only - nên hash trong production
-                    CreatedAt = DateTime.UtcNow,
-                    IsActive = true
-                },
-                new User
-                {
-                    UserId = 2,
-                    Username = "user1",
-                    Email = "user1@example.com",
-                    PasswordHash = "user123",
-                    CreatedAt = DateTime.UtcNow,
-                    IsActive = true
-                },
-                new User
-                {
-                    UserId = 3,
-                    Username = "user2",
-                    Email = "user2@example.com",
-                    PasswordHash = "user123",
-                    CreatedAt = DateTime.UtcNow,
-                    IsActive = true
-                }
+                new User { UserId = 1, Username = "author_admin", Email = "author@test.com", PasswordHash = "hash123" },
+                new User { UserId = 2, Username = "reader_01", Email = "reader@test.com", PasswordHash = "hash123" }
             );
 
-            // ================================================================
-            // Seed Data - Categories (for Factory Pattern)
-            // ================================================================
+            // Categories (for Factory Pattern)
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, Name = "Hành Động", IsActive = true },
                 new Category { CategoryId = 2, Name = "Kinh Dị", IsActive = true },
                 new Category { CategoryId = 3, Name = "Lãng Mạn", IsActive = true },
                 new Category { CategoryId = 4, Name = "Trinh Thám", IsActive = true }
+            );
+
+            // Stories
+            modelBuilder.Entity<Story>().HasData(
+                new Story
+                {
+                    StoryId = 1,
+                    Title = "Huyền Thoại Sát Thủ",
+                    AuthorId = 1,
+                    CategoryId = 1,
+                    CoverImage = "https://picsum.photos/200/300?random=1",
+                    Description = "Truyện hành động hấp dẫn.",
+                    ViewCount = 1000,
+                    AverageRating = 4.5m,
+                    TotalRatings = 1
+                },
+                new Story
+                {
+                    StoryId = 2,
+                    Title = "Tiếng Vọng Đêm Khuya",
+                    AuthorId = 1,
+                    CategoryId = 2,
+                    CoverImage = "https://picsum.photos/200/300?random=2",
+                    Description = "Truyện kinh dị kịch tính.",
+                    ViewCount = 500,
+                    AverageRating = 4.0m,
+                    TotalRatings = 1
+                }
+            );
+
+            // Seed Chapters
+            modelBuilder.Entity<Chapter>().HasData(
+                new Chapter { ChapterId = 1, StoryId = 1, ChapterNumber = 1, Title = "Hồi kết bắt đầu", Content = "Nội dung chương 1..." },
+                new Chapter { ChapterId = 2, StoryId = 2, ChapterNumber = 1, Title = "Bóng tối", Content = "Nội dung chương 1 kinh dị..." }
+            );
+
+            // Seed Follower (Test Observer)
+            modelBuilder.Entity<StoryFollower>().HasData(
+                new StoryFollower { FollowId = -1, UserId = 2, StoryId = 1, CreatedAt = DateTime.UtcNow }
+            );
+
+            // Seed ReadingProgress (Test Singleton - Tiến trình đọc duy nhất)
+            modelBuilder.Entity<ReadingProgress>().HasData(
+                new ReadingProgress
+                {
+                    ProgressId = -1,
+                    UserId = 2,
+                    CurrentStoryId = 1,
+                    CurrentChapterId = 1,
+                    LastReadPosition = 150,
+                    TotalStoriesRead = 1,
+                    TotalChaptersRead = 1,
+                    LastReadAt = DateTime.UtcNow
+                }
+            );
+
+            // Seed ReadingMode (Test Strategy - Lưu cấu hình đọc của User)
+            modelBuilder.Entity<ReadingMode>().HasData(
+                new ReadingMode
+                {
+                    ModeId = -1,
+                    UserId = 2,
+                    Theme = "Night",
+                    NavigationMode = "Scroll",
+                    FontSize = 18,
+                    FontFamily = "Georgia",
+                    LineHeight = 1.8m
+                }
             );
         }
     }

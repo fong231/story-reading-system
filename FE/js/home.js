@@ -1,4 +1,4 @@
-const BACKEND_URL = "https://localhost:5001"; // Sửa lại port BE của em nếu khác
+const BACKEND_URL = "https://localhost:7210"; // Sửa lại port BE của em nếu khác
 
 document.addEventListener("DOMContentLoaded", async () => {
     // 1. Lắng nghe thông báo (Observer Pattern)
@@ -24,7 +24,7 @@ async function loadStories() {
             card.innerHTML = `
                 <img src="${story.coverImage || 'https://via.placeholder.com/200x300?text=No+Cover'}" alt="Cover">
                 <h3>${story.title}</h3>
-                <span class="badge-category">Thể loại: ${story.categoryId}</span>
+                <span class="badge-category">Thể loại: ${story.category.name}</span>
                 <p style="font-size: 14px; color: #666;">${story.description}</p>
             `;
             // Khi bấm vào truyện, chuyển sang trang đọc
