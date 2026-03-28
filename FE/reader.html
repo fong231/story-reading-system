@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Đọc Truyện - Design Patterns</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">📖 StoryReader</div>
+        <div class="controls">
+            <button id="btn-undo" disabled>↩ Undo</button>
+            <button id="btn-redo" disabled>↪ Redo</button>
+
+            <select id="reading-mode-select">
+                <option value="day-scroll">☀️ Ban ngày (Cuộn)</option>
+                <option value="night-scroll">🌙 Ban đêm (Cuộn)</option>
+                <option value="day-flip">☀️ Ban ngày (Lật trang)</option>
+                <option value="night-flip">🌙 Ban đêm (Lật trang)</option>
+            </select>
+
+            <div class="notification">
+                🔔 <span id="noti-badge" class="badge hidden">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="reader-container" class="reader-content">
+            <h1>Chương 1: Khởi Đầu Mới</h1>
+            <p>Đây là nội dung mẫu của chương truyện. Tech Lead Design Pattern đang hướng dẫn bạn code FE bằng Vanilla JS. Khi bạn đổi chế độ ở phía trên, nội dung này sẽ thay đổi cách hiển thị mà không cần load lại trang.</p>
+            <p>Design Pattern giúp code của chúng ta linh hoạt, dễ bảo trì và dễ mở rộng hơn rất nhiều.</p>
+            <p>Hãy thử đổi chế độ đọc và bấm Undo/Redo để xem Command Pattern hoạt động nhé!</p>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="js/patterns/Strategy.js"></script>
+    <script src="js/patterns/Command.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
