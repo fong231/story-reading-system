@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Khu Vực Tác Giả</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .form-group { margin-bottom: 15px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; margin-top: 5px;}
+    </style>
+</head>
+<body>
+    <header class="navbar"><div class="logo">✒️ Tác Giả</div></header>
+    <main class="container" style="background: white; padding: 20px; border-radius: 8px;">
+        <h2>Đăng Chương Mới (Kích hoạt Observer)</h2>
+        <div class="form-group"><label>Truyện:</label><select id="select-story"></select></div>
+        <div class="form-group"><label>Số chương:</label><input type="number" id="chapter-number" value="1"></div>
+        <div class="form-group"><label>Tiêu đề:</label><input type="text" id="chapter-title"></div>
+        <div class="form-group"><label>Nội dung:</label><textarea id="chapter-content" rows="10"></textarea></div>
+        <button id="btn-publish" style="padding: 10px; background: green; color: white; border: none; cursor: pointer;">Xuất Bản</button>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="js/author.js"></script>
+</body>
+</html>

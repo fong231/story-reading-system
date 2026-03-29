@@ -2,42 +2,54 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Đọc Truyện - Design Patterns</title>
+    <title>Đang đọc truyện</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header class="navbar">
-        <div class="logo">📖 StoryReader</div>
+        <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer">⬅ Về</div>
         <div class="controls">
             <button id="btn-undo" disabled>↩ Undo</button>
             <button id="btn-redo" disabled>↪ Redo</button>
-
             <select id="reading-mode-select">
                 <option value="day-scroll">☀️ Ban ngày (Cuộn)</option>
                 <option value="night-scroll">🌙 Ban đêm (Cuộn)</option>
-                <option value="day-flip">☀️ Ban ngày (Lật trang)</option>
-                <option value="night-flip">🌙 Ban đêm (Lật trang)</option>
+                <option value="day-flip">☀️ Ban ngày (Lật)</option>
+                <option value="night-flip">🌙 Ban đêm (Lật)</option>
             </select>
-
-            <div class="notification">
-                🔔 <span id="noti-badge" class="badge hidden">0</span>
-            </div>
+            <div class="notification">🔔 <span id="noti-badge" class="badge hidden">0</span></div>
         </div>
     </header>
 
     <main class="container">
         <div id="reader-container" class="reader-content">
-            <h1>Chương 1: Khởi Đầu Mới</h1>
-            <p>Đây là nội dung mẫu của chương truyện. Tech Lead Design Pattern đang hướng dẫn bạn code FE bằng Vanilla JS. Khi bạn đổi chế độ ở phía trên, nội dung này sẽ thay đổi cách hiển thị mà không cần load lại trang.</p>
-            <p>Design Pattern giúp code của chúng ta linh hoạt, dễ bảo trì và dễ mở rộng hơn rất nhiều.</p>
-            <p>Hãy thử đổi chế độ đọc và bấm Undo/Redo để xem Command Pattern hoạt động nhé!</p>
+            <h1 id="chapter-title">Đang tải...</h1>
+            <div id="chapter-content">Vui lòng đợi...</div>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <button id="btn-bookmark" style="padding: 10px 20px; background: #e67e22; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                🔖 Bookmark (Đánh dấu trang)
+            </button>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 8px;">
+            <h3>Đánh giá truyện này</h3>
+            <div id="star-rating" style="font-size: 24px; cursor: pointer; color: #ccc;">
+                <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
+            </div>
+            
+            <h3 style="margin-top:20px;">Bình luận</h3>
+            <textarea id="comment-text" rows="3" style="width: 100%; padding: 10px;" placeholder="Nhập bình luận..."></textarea>
+            <button id="btn-submit-comment" style="margin-top: 10px; padding: 10px; background: #2980b9; color: white; border: none; cursor: pointer;">Gửi</button>
+            <div id="comment-list" style="margin-top: 20px;"></div>
         </div>
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="js/patterns/Strategy.js"></script>
     <script src="js/patterns/Command.js"></script>
+    <script src="js/patterns/Observer.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
