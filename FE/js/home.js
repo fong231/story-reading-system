@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("category-filter").addEventListener("change", (e) => {
         loadStories(e.target.value);
     });
+
+    // Logic Xuất Báo Cáo đã chuyển qua trang export-report.html
 });
 
 async function loadCategories() {
@@ -37,9 +39,9 @@ async function loadStories(categoryId) {
         
         listEl.innerHTML = stories.length === 0 ? "<p>Không có truyện.</p>" : stories.map(story => `
             <div class="story-card" onclick="window.location.href='story-detail.html?storyId=${story.storyId}'">
-                <img src="${story.coverImage}" alt="Cover">
-                <h3>${story.title}</h3>
-                <span class="badge-category">${story.category ? story.category.name : 'Chưa phân loại'}</span>
+                <img src="${story.coverImage}" alt="Cover" style="margin-bottom: 10px;">
+                <h3 style="margin-bottom: 5px;">${story.title}</h3>
+                <div class="badge-category" style="width: fit-content; margin-bottom: 10px;">${story.category ? story.category.name : 'Chưa phân loại'}</div>
                 <p style="font-size: 14px; color: #666;">${story.description.substring(0, 50)}...</p>
             </div>
         `).join('');

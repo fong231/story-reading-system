@@ -3,28 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <title>Đang đọc truyện</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/reader.css">
 </head>
 <body>
     <header class="navbar">
-        <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer">⬅ Về</div>
-        <div class="controls">
-            <button id="btn-undo" disabled>↩ Undo</button>
-            <button id="btn-redo" disabled>↪ Redo</button>
-            <select id="reading-mode-select">
-                <option value="day-scroll">☀️ Ban ngày (Cuộn)</option>
-                <option value="night-scroll">🌙 Ban đêm (Cuộn)</option>
-                <option value="day-flip">☀️ Ban ngày (Lật)</option>
-                <option value="night-flip">🌙 Ban đêm (Lật)</option>
-            </select>
+        <div class="logo" id="btn-back" style="cursor:pointer">⬅ Về</div>
+        <div class="controls">            <!-- Nút bánh răng cài đặt -->
+            <button id="btn-settings" style="font-size: 20px; background: none; border: none; color: white; cursor: pointer;">⚙️</button>
             <div class="notification">🔔 <span id="noti-badge" class="badge hidden">0</span></div>
         </div>
     </header>
+
+    <!-- Modal Cài Đặt -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cài đặt đọc truyện</h2>
+                <span class="close-modal" id="close-settings">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <label>Chế độ nền:</label>
+                    <select id="theme-select">
+                        <option value="day">☀️ Ban ngày</option>
+                        <option value="night">🌙 Ban đêm</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <label>Cách đọc:</label>
+                    <select id="nav-mode-select">
+                        <option value="scroll">📜 Cuộn dọc</option>
+                        <option value="flip">📖 Lật trang</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <label>Cỡ chữ:</label>
+                    <input type="number" id="font-size-input" min="12" max="40" value="18">
+                </div>
+                <div class="settings-group">
+                    <label>Phông chữ:</label>
+                    <select id="font-family-select">
+                        <option value="Arial">Arial</option>
+                        <option value="'Times New Roman', Times, serif">Times New Roman</option>
+                        <option value="'Courier New', Courier, monospace">Courier New</option>
+                        <option value="Georgia, serif">Georgia</option>
+                        <option value="Verdana, Geneva, sans-serif">Verdana</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <label>Khoảng cách dòng:</label>
+                    <select id="line-height-select">
+                        <option value="1.2">1.2</option>
+                        <option value="1.5">1.5</option>
+                        <option value="1.8">1.8</option>
+                        <option value="2.0">2.0</option>
+                    </select>
+                </div>
+                <div class="settings-group" style="display: flex; gap: 10px;">
+                    <button id="btn-undo" class="btn-action" style="flex: 1; background: #607d8b; color: white;" disabled>↩ Undo</button>
+                    <button id="btn-redo" class="btn-action" style="flex: 1; background: #607d8b; color: white;" disabled>↪ Redo</button>
+                </div>
+                <hr style="margin: 15px 0;">
+                <p style="font-size: 12px; color: #666;">Cài đặt sẽ được lưu tự động khi bạn nhấn Lưu.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-save-settings" class="btn-save">Lưu cấu hình</button>
+                <button id="btn-cancel-settings" class="btn-cancel">Hủy</button>
+            </div>
+        </div>
+    </div>
 
     <main class="container">
         <div id="reader-container" class="reader-content">
             <h1 id="chapter-title">Đang tải...</h1>
             <div id="chapter-content">Vui lòng đợi...</div>
+        </div>
+
+        <div class="navigation-bar" style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px;">
+            <button id="btn-prev-chapter" class="btn-nav" disabled title="Chương trước">⏮</button>
+            
+            <div class="flip-controls">
+                <button id="btn-prev-page" class="btn-nav">⬅ Trang trước</button>
+                <button id="btn-next-page" class="btn-nav">Trang sau ➡</button>
+            </div>
+
+            <button id="btn-next-chapter" class="btn-nav" disabled title="Chương sau">⏭</button>
         </div>
 
         <div style="text-align: center; margin: 30px 0;">
@@ -33,12 +102,7 @@
             </button>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 8px;">
-            <h3>Đánh giá truyện này</h3>
-            <div id="star-rating" style="font-size: 24px; cursor: pointer; color: #ccc;">
-                <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
-            </div>
-            
+        <div class="section">
             <h3 style="margin-top:20px;">Bình luận</h3>
             <textarea id="comment-text" rows="3" style="width: 100%; padding: 10px;" placeholder="Nhập bình luận..."></textarea>
             <button id="btn-submit-comment" style="margin-top: 10px; padding: 10px; background: #2980b9; color: white; border: none; cursor: pointer;">Gửi</button>
@@ -47,6 +111,7 @@
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/patterns/Strategy.js"></script>
     <script src="js/patterns/Command.js"></script>
     <script src="js/patterns/Observer.js"></script>

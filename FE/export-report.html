@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Xuất Báo Cáo - StoryReader</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <style>
+        .report-form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .report-preview {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            min-height: 200px;
+            border: 1px solid #ddd;
+            font-family: 'Courier New', Courier, monospace;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .form-row {
+            margin-bottom: 20px;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-row select, .form-row input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-action {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+        .btn-preview { background-color: #3498db; }
+        .btn-download { background-color: #27ae60; display: none; }
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer">📖 StoryReader</div>
+        <div class="controls">
+            <a href="index.html" style="color: white; text-decoration: none;">⬅ Trang chủ</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <h2>Xuất Báo Cáo Tác Giả</h2>
+        
+        <div class="report-form">
+            <div class="form-row">
+                <label for="story-select">Chọn Truyện:</label>
+                <select id="story-select">
+                    <option value="">-- Chọn truyện của bạn --</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="report-type">Loại báo cáo:</label>
+                <select id="report-type">
+                    <option value="revenue">Báo cáo doanh thu</option>
+                    <option value="viewgrowth">Báo cáo lượt xem</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="start-date">Ngày bắt đầu:</label>
+                <input type="date" id="start-date" value="2024-01-01">
+            </div>
+            <div class="form-row">
+                <label for="end-date">Ngày kết thúc:</label>
+                <input type="date" id="end-date" value="2024-12-31">
+            </div>
+            <div class="btn-group">
+                <button id="btn-preview" class="btn-action btn-preview">Xem trước bản tin</button>
+                <button id="btn-download" class="btn-action btn-download">Tải về (.txt)</button>
+            </div>
+        </div>
+
+        <h3>Bản xem trước (Preview)</h3>
+        <div id="report-preview" class="report-preview">
+            Nội dung báo cáo sẽ hiển thị ở đây...
+        </div>
+    </main>
+
+    <script src="js/utils.js"></script>
+    <script src="js/export-report.js"></script>
+</body>
+</html>

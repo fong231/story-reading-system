@@ -149,7 +149,7 @@ Số truyện:             {data.StoryCount}
 
         protected override object CalculateMetrics(object rawData)
         {
-            var stories = (List<dynamic>)rawData;
+            var stories = ((IEnumerable<dynamic>)rawData).ToList();
 
             // Tính growth rate
             var totalViews = stories.Sum(s => (int)s.ViewCount);

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Khu Vực Đăng Truyện</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <style>
+        .form-group { margin-bottom: 15px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; margin-top: 5px;}
+    </style>
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo">✒️ Tác Giả</div>
+        <div class="controls">
+            <a href="index.html" style="color: white; text-decoration: none;">⬅ Về Trang Chủ</a>
+        </div>
+    </header>
+    <main class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+        <!-- Phần 1: Đăng Truyện Mới (Factory Pattern) -->
+        <section style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">🆕 Đăng Truyện Mới</h2>
+            
+            <div class="form-group">
+                <label>Tên truyện:</label>
+                <input type="text" id="story-title" placeholder="Nhập tên truyện...">
+            </div>
+
+            <div class="form-group">
+                <label>Mô tả:</label>
+                <textarea id="story-description" rows="4" placeholder="Nhập mô tả ngắn..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Thể loại:</label>
+                <select id="story-genre">
+                    <!-- Sẽ được load từ BE -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Link ảnh bìa:</label>
+                <input type="text" id="story-cover" placeholder="https://...">
+            </div>
+
+            <button id="btn-create-story" style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold;">
+                Tạo Truyện
+            </button>
+        </section>
+
+        <!-- Phần 2: Đăng Chương Mới (Observer Pattern) -->
+        <section style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">📖 Đăng Chương Mới</h2>
+
+            <div class="form-group">
+                <label>Chọn truyện:</label>
+                <select id="select-story"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Số chương:</label>
+                <input type="number" id="chapter-number" value="1">
+            </div>
+
+            <div class="form-group">
+                <label>Tiêu đề chương:</label>
+                <input type="text" id="chapter-title" placeholder="Chương 1: Khởi đầu...">
+            </div>
+
+            <div class="form-group">
+                <label>Nội dung:</label>
+                <textarea id="chapter-content" rows="10" placeholder="Nội dung chương truyện..."></textarea>
+            </div>
+
+            <button id="btn-publish-chapter" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold;">
+                Xuất Bản Chương
+            </button>
+        </section>
+    </main>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/upload-story.js"></script>
+</body>
+</html>

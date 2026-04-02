@@ -9,6 +9,7 @@ namespace BE.Services
         Task<IEnumerable<object>> GetAllStoriesAsync();
         Task<object> GetStoryByIdAsync(int id);
         Task<IEnumerable<object>> GetStoriesByCategoryAsync(int categoryId);
+        Task<IEnumerable<object>> GetStoriesByAuthorAsync(int authorId);
         Task<Story> CreateStoryAsync(string title, string description, string coverImage, int authorId, int categoryId);
         Task<bool> UpdateStoryAsync(int id, string title, string description, string coverImage, string status);
         Task<bool> DeleteStoryAsync(int id);
@@ -107,6 +108,29 @@ namespace BE.Services
                     Author = new { s.Author.UserId, s.Author.Username },
                     Category = new { s.Category.CategoryId, s.Category.Name },
                     StoryType = _storyFactory.GetStoryType(categoryId)
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<object>> GetStoriesByAuthorAsync(int authorId)
+        {
+            return await _context.Stories
+                .Include(s => s.Category)
+                .Where(s => s.AuthorId == authorId && s.IsActive)
+                .OrderByDescending(s => s.CreatedAt)
+                .Select(s => new
+                {
+                    s.StoryId,
+                    s.Title,
+                    s.Description,
+                    s.CoverImage,
+                    s.ViewCount,
+                    s.AverageRating,
+                    s.TotalRatings,
+                    s.Status,
+                    s.CreatedAt,
+                    Category = new { s.Category.CategoryId, s.Category.Name },
+                    TotalChapters = s.Chapters.Count(c => c.IsActive)
                 })
                 .ToListAsync();
         }

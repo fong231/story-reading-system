@@ -1,0 +1,71 @@
+.reader-content {
+    background-color: var(--reader-bg);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    min-height: 400px;
+}
+
+.theme-night {
+    --bg-color: #1a1a1a;
+    --text-color: #e0e0e0;
+    --reader-bg: #2d2d2d;
+}
+
+.mode-scroll {
+    overflow-y: auto;
+    max-height: none;
+}
+
+/* Chế độ lật trang (Flip) */
+.mode-flip {
+    display: block;
+    /* column-width được set bằng JS (clientWidth px) để tạo đúng 1 cột/trang */
+    column-gap: 40px;
+    height: 70vh;
+    overflow-x: auto;
+    overflow-y: hidden;
+    /* Ẩn scrollbar ngang trên mọi trình duyệt */
+    -ms-overflow-style: none;  /* IE / Edge cũ */
+    scrollbar-width: none;     /* Firefox */
+}
+.mode-flip::-webkit-scrollbar {
+    display: none;             /* Chrome / Safari / Edge mới */
+}
+
+/* Đổi giao diện trực tiếp, đảm bảo độ ưu tiên cao nhất */
+body.theme-night {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+body.theme-night .navbar {
+    background-color: #111;
+}
+
+body.theme-night .reader-content {
+    background-color: #2d2d2d;
+    box-shadow: 0 4px 6px rgba(255,255,255,0.05);
+}
+
+body.theme-night .section {
+    background: #2d2d2d;
+    color: #e0e0e0;
+}
+
+body.theme-night .section textarea {
+    background: #1a1a1a;
+    color: #e0e0e0;
+    border-color: #444;
+}
+
+.flip-controls {
+    display: none; 
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+}
+
+.mode-flip-parent + .navigation-bar .flip-controls {
+    display: flex;
+}

@@ -1,0 +1,14 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #2c3e50;
+    color: white;
+}
+
+.controls button, .controls select {
+    padding: 8px;
+    margin-left: 10px;
+    cursor: pointer;
+}

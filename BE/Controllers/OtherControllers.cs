@@ -152,15 +152,15 @@ namespace BE.Controllers
 
         // GET: api/Ratings/User/5/Story/10
         [HttpGet("User/{userId}/Story/{storyId}")]
-        public async Task<ActionResult<Rating>> GetUserRating(int userId, int storyId)
+        public async Task<ActionResult<object>> GetUserRating(int userId, int storyId)
         {
             var rating = await _context.Ratings
                 .FirstOrDefaultAsync(r => r.UserId == userId && r.StoryId == storyId);
 
             if (rating == null)
-                return NotFound();
+                return Ok(new { score = 0 });
 
-            return rating;
+            return Ok(new { rating.RatingId, rating.Score });
         }
 
         // POST: api/Ratings
@@ -194,6 +194,22 @@ namespace BE.Controllers
                 return CreatedAtAction(nameof(GetUserRating),
                     new { userId = rating.UserId, storyId = rating.StoryId }, rating);
             }
+        }
+
+        // DELETE: api/Ratings/User/5/Story/10
+        [HttpDelete("User/{userId}/Story/{storyId}")]
+        public async Task<IActionResult> DeleteUserRating(int userId, int storyId)
+        {
+            var rating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.StoryId == storyId);
+
+            if (rating == null)
+                return NotFound();
+
+            _context.Ratings.Remove(rating);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // DELETE: api/Ratings/5

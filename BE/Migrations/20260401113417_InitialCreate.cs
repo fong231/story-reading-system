@@ -1,0 +1,581 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
+namespace BE.Migrations
+{
+    /// <inheritdoc />
+    public partial class InitialCreate : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Username = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReadingModes",
+                columns: table => new
+                {
+                    ModeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Theme = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    NavigationMode = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    FontSize = table.Column<int>(type: "int", nullable: false),
+                    FontFamily = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LineHeight = table.Column<decimal>(type: "decimal(3,1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReadingModes", x => x.ModeId);
+                    table.ForeignKey(
+                        name: "FK_ReadingModes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stories",
+                columns: table => new
+                {
+                    StoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "ntext", nullable: false),
+                    CoverImage = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    AuthorId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    ViewCount = table.Column<int>(type: "int", nullable: false),
+                    AverageRating = table.Column<decimal>(type: "decimal(3,2)", nullable: false),
+                    TotalRatings = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stories", x => x.StoryId);
+                    table.ForeignKey(
+                        name: "FK_Stories_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Stories_Users_AuthorId",
+                        column: x => x.AuthorId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Chapters",
+                columns: table => new
+                {
+                    ChapterId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StoryId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    ChapterNumber = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "ntext", nullable: false),
+                    ViewCount = table.Column<int>(type: "int", nullable: false),
+                    PublishedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Chapters", x => x.ChapterId);
+                    table.ForeignKey(
+                        name: "FK_Chapters_Stories_StoryId",
+                        column: x => x.StoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    CommentId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StoryId = table.Column<int>(type: "int", nullable: false),
+                    Content = table.Column<string>(type: "ntext", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.CommentId);
+                    table.ForeignKey(
+                        name: "FK_Comments_Stories_StoryId",
+                        column: x => x.StoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ratings",
+                columns: table => new
+                {
+                    RatingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StoryId = table.Column<int>(type: "int", nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ratings", x => x.RatingId);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Stories_StoryId",
+                        column: x => x.StoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Ratings_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StoryFollowers",
+                columns: table => new
+                {
+                    FollowId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StoryId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StoryFollowers", x => x.FollowId);
+                    table.ForeignKey(
+                        name: "FK_StoryFollowers_Stories_StoryId",
+                        column: x => x.StoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_StoryFollowers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Bookmarks",
+                columns: table => new
+                {
+                    BookmarkId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StoryId = table.Column<int>(type: "int", nullable: false),
+                    ChapterId = table.Column<int>(type: "int", nullable: false),
+                    ScrollPosition = table.Column<int>(type: "int", nullable: false),
+                    LastReadAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookmarks", x => x.BookmarkId);
+                    table.ForeignKey(
+                        name: "FK_Bookmarks_Chapters_ChapterId",
+                        column: x => x.ChapterId,
+                        principalTable: "Chapters",
+                        principalColumn: "ChapterId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookmarks_Stories_StoryId",
+                        column: x => x.StoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Bookmarks_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    NotificationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    StoryId = table.Column<int>(type: "int", nullable: false),
+                    ChapterId = table.Column<int>(type: "int", nullable: true),
+                    Message = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Chapters_ChapterId",
+                        column: x => x.ChapterId,
+                        principalTable: "Chapters",
+                        principalColumn: "ChapterId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Stories_StoryId",
+                        column: x => x.StoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReadingProgresses",
+                columns: table => new
+                {
+                    ProgressId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    CurrentStoryId = table.Column<int>(type: "int", nullable: true),
+                    CurrentChapterId = table.Column<int>(type: "int", nullable: true),
+                    LastReadPosition = table.Column<int>(type: "int", nullable: false),
+                    TotalStoriesRead = table.Column<int>(type: "int", nullable: false),
+                    TotalChaptersRead = table.Column<int>(type: "int", nullable: false),
+                    LastReadAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReadingProgresses", x => x.ProgressId);
+                    table.ForeignKey(
+                        name: "FK_ReadingProgresses_Chapters_CurrentChapterId",
+                        column: x => x.CurrentChapterId,
+                        principalTable: "Chapters",
+                        principalColumn: "ChapterId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ReadingProgresses_Stories_CurrentStoryId",
+                        column: x => x.CurrentStoryId,
+                        principalTable: "Stories",
+                        principalColumn: "StoryId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ReadingProgresses_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "CategoryId", "IsActive", "Name" },
+                values: new object[,]
+                {
+                    { 1, true, "Hành Động" },
+                    { 2, true, "Kinh Dị" },
+                    { 3, true, "Lãng Mạn" },
+                    { 4, true, "Trinh Thám" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "CreatedAt", "Email", "IsActive", "PasswordHash", "Username" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6705), "author@test.com", true, "hash123", "author_admin" },
+                    { 2, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6714), "reader@test.com", true, "hash123", "reader_01" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ReadingModes",
+                columns: new[] { "ModeId", "CreatedAt", "FontFamily", "FontSize", "LineHeight", "NavigationMode", "Theme", "UpdatedAt", "UserId" },
+                values: new object[] { -1, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6999), "Georgia", 18, 1.8m, "Scroll", "Night", null, 2 });
+
+            migrationBuilder.InsertData(
+                table: "Stories",
+                columns: new[] { "StoryId", "AuthorId", "AverageRating", "CategoryId", "CoverImage", "CreatedAt", "Description", "IsActive", "Status", "Title", "TotalRatings", "UpdatedAt", "ViewCount" },
+                values: new object[,]
+                {
+                    { 1, 1, 4.5m, 1, "https://picsum.photos/200/300?random=1", new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6852), "Truyện hành động hấp dẫn.", true, "Ongoing", "Huyền Thoại Sát Thủ", 1, null, 1000 },
+                    { 2, 1, 4.0m, 2, "https://picsum.photos/200/300?random=2", new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6861), "Truyện kinh dị kịch tính.", true, "Ongoing", "Tiếng Vọng Đêm Khuya", 1, null, 500 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Chapters",
+                columns: new[] { "ChapterId", "ChapterNumber", "Content", "IsActive", "PublishedAt", "StoryId", "Title", "ViewCount" },
+                values: new object[,]
+                {
+                    { 1, 1, "    <div>\"Điều gì sẽ xảy ra với con người sau khi chết?”</div>\r\n    <div>“Tôi không biết vì tôi đã chết bao giờ đâu.”</div>\r\n    <div>Tôi thản nhiên trả lời người bạn của mình, người đột nhiên hỏi tôi một câu như vậy khi chúng tôi đang uống rượu.</div>\r\n    <div>Đó chưa bao giờ là một chủ đề mà tôi dành nhiều tâm trí để suy nghĩ. Suy cho cùng, việc mài sắc lưỡi kiếm thêm một chút có vẻ là cách sử dụng thời gian tốt hơn là nghiền ngẫm những điều như thế.</div>\r\n    <div>“Người ta nói rằng một số người sẽ được tái sinh.”</div>\r\n    <div>“À, vậy thì, tôi hy vọng kiếp sau mình được sinh ra trong một gia đình bình thường. Tôi muốn sống một đời lặng lẽ.”</div>\r\n    <div>Hắn cười ngắn ngủi trước lời nói của tôi về việc muốn có một cuộc sống yên bình, rồi hỏi lại.</div>\r\n    <div>“Cậu nghiêm túc chứ?\"</div>\r\n    <div>\"Ù.\"</div>\r\n    <div>“Nhiều người đã đang phải chịu đựng thảm họa rồi. Nếu cậu hành động, sẽ còn nhiều người hơn nữa phải chết.”</div>\r\n    <div>\"Tôi không quan tâm.”</div>\r\n    <div>“Tôi không nhận ra người bạn vui vẻ của mình lại mang trong lòng nhiều đau đớn đến thế.”</div>\r\n    <div>“Ai mà chẳng có một vài quá khứ đau thương.\"</div>\r\n    <div>Hắn gật đầu đồng ý, rồi nâng ly lên.</div>\r\n    <div>“Hãy đi săn quái vật lần nữa khi tất cả chuyện này kết thúc nhé.”</div>\r\n    <div>“Vậy thì tìm cho tôi một đối thủ xứng tầm đi.”</div>\r\n    <div>Hắn cười khẩy, cạn chén trong một hơi rồi đặt ly xuống.</div>\r\n    <div>“Chúc may mắn. Tôi có nên cầu nguyện cho cậu không?\"</div>\r\n    <div>“Tôi không tin vào thần linh. Tôi chỉ tin vào thứ này thôi.”</div>\r\n    <div>Tôi lắc lắc thanh kiếm của mình và cười, khiến hắn lắc đầu ngán ngẩm khi đứng dậy.</div>\r\n    <div>\"Tạm biệt. Tôi sẽ không đi xa đâu.\"</div>\r\n    <div>“Cứ như cậu từng đi xa không bằng.”</div>\r\n    <div>Xoẹt.</div>\r\n    <div>Một vòng xoáy đen xuất hiện, và cơ thể hắn bị hút vào đó, biến mất khỏi tầm mắt.</div>\r\n    <div>“Quả là một kỹ năng tiện lợi.”</div>\r\n    <div>Còn lại một mình, tôi nâng ly.</div>\r\n    <div>Một ly, hai ly, ba ly.</div>\r\n    <div>Ký ức quá khứ lại ùa về.</div>\r\n    <div>'Tôi hối hận.'</div>\r\n    <div>Lãnh địa Ferdium nằm ở phía bắc của Vương quốc Ritania.</div>\r\n    <div>Đó là một vùng đất nghèo nàn và hoang vằng nằm ở biên giới vương quốc, liên tục phải chiến đấu với những kẻ man di.</div>\r\n    <div>Tôi sinh ra là người thừa kế của lãnh địa đó.</div>\r\n    <div>'Tôi đã thật thảm hại.'</div>\r\n    <div>Tôi sống cả đời chỉ toàn những lời phàn nàn, liên tục so sánh hoàn cảnh của mình với những đứa trẻ quý tộc khác.</div>\r\n    <div>Sự so sánh nảy sinh lòng tự ti.</div>\r\n    <div>Sự tự ti bộc phát thành những hành động liều lĩnh, dẫn đến tai nạn; những người khác liên tục chỉ trỏ và chế giễu tôi.</div>\r\n    <div>Một tên đốn mạt, một kẻ điên, một bậc thầy kiếm thuật tự kỷ ...</div>\r\n    <div>Tôi đã sống qua đủ loại danh hiệu lăng mạ cho đến khi cuối cùng, tôi bỏ trốn khỏi gia đình trong sự nhục nhã.</div>\r\n    <div>Nhiều năm trôi qua khi tôi lang thang với tư cách là lính đánh thuê.</div>\r\n    <div>Có lẽ tôi đã may mắn, nhưng tôi đã xoay sở để sống sót dù đã lăn lộn qua vô số chiến trường.</div>\r\n    <div>Khi tôi có được kỹ năng, cận kề cái chết hết lần này đến lần khác, danh tiếng của tôi lớn dần-và nỗi nhớ nhà cũng vậy.</div>\r\n    <div>'Tôi đã nghĩ mọi thứ sẽ ổn nều mình trở về gia đình vào lúc đó.'</div>\r\n    <div>Với sự hổi hận và tội lỗi về những ngày tháng tuổi trẻ ngu ngốc, tôi nghĩ mình có thể trở về nhà và giúp ích rất nhiều cho gia đình.</div>\r\n    <div>Nhưng ...</div>\r\n    <div>Vào thời điểm tôi trở về, gia đình và điền trang của tôi đã biến thành tro bụi.</div>\r\n    <div>Tôi không thể làm gì được. Tất cả những gì tôi làm là chạy trốn.</div>\r\n    <div>Tôi phải lần trốn, vứt bỏ cả cái tên quý tộc của mình, lo sợ những tổn hại tiềm tàng mà mình có thể phải đối mặt.</div>\r\n    <div>'Tôi phải trở nên mạnh mẽ hơn.'</div>\r\n    <div>Một mục tiêu mới trỗi dậy trong tôi.</div>\r\n    <div>Tôi đã chịu đựng nhiều năm đau đớn khổ sở, mài giũa bản thân như một lưỡi kiếm. Tôi chiến đấu không ngừng nghỉ chống lại vô số tai ương tàn phá lục địa.</div>\r\n    <div>Đến một lúc nào đó, mọi người bắt đầu gọi tôi bằng một cái tên mới. Vua Lính Đánh Thuê.</div>\r\n    <div>Và cuối cùng, tôi đứng trong hàng ngũ bảy người quyền năng nhất thế giới, ở vị trí vinh quang được biết đến là Thất Cường Lục Địa.</div>\r\n    <div>Vào lúc đó, tôi không thiếu thứ gì trong đời, với vô số thuộc hạ, danh tiếng vô song và kỹ năng để chứng minh tất cả.</div>\r\n    <div>'Nhưng bấy nhiêu vẫn là chưa đủ.'</div>\r\n    <div>Tuy nhiên, tôi luôn cảm thấy một cơn khát không thể thỏa mãn.</div>", true, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6930), 1, "Sự coi thường này, thật quen thuộc", 0 },
+                    { 2, 2, "    <div>\"Anh trai?\"</div>\r\n    <div>Khi Ghislain đột nhiên nắm lấy mặt cô và đôi vai anh bắt đầu run lên, Elena lộ ra vẻ mặt hơi sợ hãi.</div>\r\n    <div>Đó là bởi vì anh trai cô thuộc mẫu người có thể nổi khùng và làm điều gì đó điên rồ bất cứ lúc nào.</div>\r\n    <div>“Hả? Ô, không, không có gì đâu. Nhưng chà, lâu thật rồi nhỉ!”</div>\r\n    <div>Ghislain dang rộng hai tay, vẻ mặt đây xúc động.</div>\r\n    <div>Cái chết của Elena từng là một ký ức đau đớn ám ảnh anh suốt cả cuộc đời. Được thấy em gái còn sống, anh cảm thấy một niềm vui khôn xiết trào dâng trong lông ngực.</div>\r\n    <div>Anh không bộc lộ cảm xúc bằng lời nói. Đúng với danh hiệu Vua lính đánh thuê, anh luôn thể hiện bản thân một cách trực diện và mạnh mẽ qua hành động.</div>\r\n    <div>\"Elena!\"</div>\r\n    <div>Khi Ghislain tiến lại gần với vòng tay rộng mở, khuôn mặt Elena thoáng chốc tái nhợt.</div>\r\n    <div>\"S-Sao vậy?\"</div>\r\n    <div>\"Anh nhớ em quá!\"</div>\r\n    <div>“Nhưng mấy hôm trước em mới gặp anh mà ... Khoan đã! Sao anh lại hành động kỳ lạ thế này? Đừng có lại gần đây!”</div>\r\n    <div>Chộp!</div>\r\n    <div>Ghislain ôm chặt lấy Elena, nhắm mắt lại. Một cảm xúc mãnh liệt đến mức suýt làm anh rơi nước mắt bao trùm lấy toàn bộ cơ thể.</div>\r\n    <div>\"Eo ôi! Sao tự dưng anh lại gây ám ảnh thế hả?\"</div>\r\n    <div>Elena thực sự bối rối.</div>\r\n    <div>Sự thật là, cô và Ghislain không có mối quan hệ tốt đẹp gì cho lắm.</div>\r\n    <div>Bị thôi thúc bởi mặc cảm tự ti, Ghislain luôn nóng nảy và khiến những người xung quanh cảm thấy mệt mỏi. Chẳng đời nào anh lại tỏ ra trìu mến với em gái mình như vậy.</div>\r\n    <div>“Đây là trò đùa gì thế? Anh lại đang âm mưu chuyện gì nữa đây?”</div>\r\n    <div>Elena vặn mình, đây Ghislain ra.</div>\r\n    <div>Ngay khi cô định buông thêm một lời chất vấn, cô sững người lại khi nhìn vào khuôn mặt anh trai mình.</div>\r\n    <div>Ánh mắt dịu dàng, một nụ cười chất chứa nỗi nhớ mong khôn tả.</div>\r\n    <div>Đó là một biểu cảm của Ghislain mà cô chưa từng thấy bao giờ, và trong khoảnh khắc, nó khiên Elena cảm thây nghẹn ngào.</div>\r\n    <div>Cô không hiếu tại sao mình lại có cảm giác này.</div>\r\n    <div>'Sao anh ấy lại hành động thế nhỉ? Lại gây chuyện gì nữa à? Và sao mắt anh ấy lại tự dưng rưng rưng thế kia?'</div>\r\n    <div>Elena nhìn Ghislain đây nghi ngờ. Phía bên kia, anh vẫn đang mỉm cười rạng rỡ, như thể không còn gì hạnh phúc hơn.</div>\r\n    <div>Dù không biết lý do, nhưng nụ cười đó vào lúc này thật sự rất chân thành.</div>\r\n    <div>'Anh ấy hơi giông ngày xưa nhỉ?'</div>\r\n    <div>Khi cha của họ luôn đi chinh chiến xa nhà, và sau khi mẹ họ qua đời, hai anh em đã nương tựa vào nhau.</div>\r\n    <div>Tuy nhiên, thời gian trôi qua và khi Ghislain trở thành một kẻ đểu cáng, mối quan hệ của họ đã dần trở nên xa cách.</div>\r\n    <div>Khi Elena nheo mắt và tiếp tục nhìn chằm chẳm vào anh, Ghislain hằng giọng.</div>\r\n    <div>“E hèm, anh chỉ là vui khi gặp em thôi. Mà thôi, em vào phòng anh làm gì thế?\"</div>\r\n    <div>\"Chà.\"</div>\r\n    <div>Elena nhìn anh sững sờ, như thể không tin vào những gì mình vừa nghe.</div>\r\n    <div>Vài ngày trước khi cô đến thăm, Ghislain đâu có phản ứng như thế này.</div>\r\n    <div>- Cút đi. Đừng có lảng vảng trước mặt tao làm mất hứng. Tao thấy sự hiện diện của mày cực kỳ khó chịu.</div>", true, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6935), 1, "Tôi sẽ không để nó xảy ra lần thứ hai", 0 },
+                    { 3, 1, "    <div>[Đây là lần đầu tiên tôi tới thăm Nhà Ma nhàm chán tới vậy.]</div>\r\n    <div>[Đạo cụ quá giả tạo; tôi không thây sợ chút nào. Nói ra thì, toàn bộ cứ như trò hề ấy.J</div>\r\n    <div>Những ngưoi thuc te nhu chung ta duong nhien khong co gi phai so ca! Ma quy lam gi co that!</div>\r\n    <div>[ Tao ghét phải nhắc lại, nhưng tao đã nói rồi mà. Lẽ ra tụi mình nên ở lại ký túc xá; Tao sắp lên level trên game online rồi.]</div>\r\n    <div>Nhóm học sinh thất vọng căn nhăn trước Ngôi Nhà Ma của Tây thành phố Cửu Giang trước khi rời đi trên xe mô-tô. Trần Ca, tay cầm sấp tờ rơi Nhà Ma, lắc đầu chán nản khi nhìn thấy vậy.</div>\r\n    <div>Nghệ thuật dọa người là một kỹ năng, nhưng với các bộ phim kinh dị, ngưỡng sợ hãi của nhiêu công dân hiện đại đã được nới rộng. Một chuyến đi Nhà Ma giờ chẳng khác gì đi dạo sân sau.</div>\r\n    <div>[Ông chủ!]</div>\r\n    <div>Một giọng trong trẻo cất lên từ đăng sau anh. Trần Ca quay lại và thấy một 'Zombie' mảnh khảnh trong bộ trang phục y tá chạy ra từ Nhà Ma trong cơn giận dữ.</div>\r\n    <div>[ Sao vậy, tiểu Uyển?] tên thật của zombie là Từ Uyền; cô ấy là một trong những diễn viên tạm thời được thuê bởi Nhà Ma.</div>\r\n    <div>[Mấy tên lưu manh lúc nãy, tụi nó dám lợi dụng em!] cô gái rít lên trong khi nghiến răng, nắm đấm nắm chặt.</div>\r\n    <div>Ra là, chỉ để phàn nàn ...</div>\r\n    <div>[ Thật là tổi tệ; tụi nó còn không để cho zombie yên.] Là ông chủ, tất nhiên Trần Ca ở phe tiểu Uyền. [Lát nữa, anh sẽ nói quản lý công viên đưa lên video giám sát.</div>\r\n    <div>[ Cái đó hông cần đâu. Khi nhận ra ý đồ, nấm đấm em đã bay thằng vào mặt tụi nó rồi. Từ Uyến chỉ vào vệt máu ở góc trang phục roi tự hào nói, [Đây, chỗ này không phải máu giả.</div>\r\n    <div>[ Tốt, tốt, con gái nên học cách tự vệ.] Trần Ca lau đi mồ hôi lạnh trên trán. Khi anh quay sang nhìn mặt trời lặng, anh nói, [Giờ chắc đã tới lúc dọn dẹp rồi nhỉ. Chúng ta có lẽ sẽ không có thêm khách nữa đâu, nên báo mọi người giúp anh hôm nay chúng ta tan ca sớm.]</div>\r\n    <div>Thế nhưng, anh nhận ra cô gái hóa trang zombie này không hề có ý định di chuyển.</div>\r\n    <div>[ Có chuyện gì nữa à?]</div>\r\n    <div>[Ông chủ ... ] Từ Uyển do dự trước khi chậm rãi kéo ra hai lá thư từ trong túi. Đây là đơn nghỉ việc của Đào Minh và tiểu Ngụy. Anh đã là ông chủ tốt với họ, nên họ không dám tận tay đưa mà lại nhờ em chuyển lời cho anh.]</div>\r\n    <div>[Họ nghỉ việc à?] Trần Ca hỏi câu hiển nhiên trong khi nhận lá thư, rồi anh nói, [Mọi người đều có giấc mơ riêng để theo đuổi, vậy đi. Tiểu Uyển, em có thể đi nếu không còn chuyện gì thêm.]</div>\r\n    <div>[Ok, em sẽ đi tẩy trang trước.</div>\r\n    <div>Sau khi cô zombie nhỏ bé ấy rời đi, Trần Ca lặng lẽ thắp điếu thuốc. Nữa năm trước, khi bố mẹ anh biến mất một cách bí ẩn, thứ duy nhất họ để lại cho anh là Ngôi Nhà Ma này. Để lưu giữ ký ức về họ, Trần Ca đã nghỉ việc để tập trung quản lý Nhà Ma này.</div>\r\n    <div>Than ôi, thời gian đã đổi thay. Mặc dù thuộc thể loại kinh điển, vẫn có sự cạnh tranh lớn giữa những Ngôi Nhà Ma, và cũng có vô số sự hạn chế. Một khung cảnh đáng sợ sẽ mất đi nhân tố sợ hãi sau trãi nghiệm đầu tiên, nhưng cập nhật liên tục sẽ đòi hỏi rất nhiều tiền và tài nguyên.</div>\r\n    <div>Bắt đầu từ vài tuần trước, Nhà Ma đã trong tình trạng báo động đỏ; thu nhập từ tiền vé hằng ngày chỉ vừa đủ để trả tiền điện nước.</div>\r\n    <div>[Mình tự hỏi mình sẽ trụ được bao lâu.]</div>\r\n    <div>Sau khi dập điều thuốc, khi Trần Ca chuẩn bị quay trở lại Nhà Ma, một ông trú trung niên mặc đồng phục Công Viên Tân Thế Kỷ đi lại chỗ anh. Khi anh thấy ông, Trần Ca tăng tốc độ như chuột thấy mèo.</div>\r\n    <div>[ Con nghĩ con có thế giả bộ không thấy chú à?] ông chú trung niên năm chặt vai Trần Ca. [Hôm nay, chúng ta chắc chắn cần phải nói chuyện. Con nợ tiền thuê chỗ với tiền điện nước hai tháng rồi. Cấp trên đang sờ gáy chú để đòi tiền đó, nên đưa đây!</div>\r\n    <div>[Chú Từ, không phải là con không muốn trả chú, nhưng con thật sự không có gì để trả chú cả. Chú cho con thêm một tháng được không?]</div>\r\n    <div>[Con nói câu này với chú tháng trước roi!</div>\r\n    <div>[Con hứa, lần này sẽ là lần cuối! Trần Ca thành thật hứa trong khi vỗ ngực.</div>\r\n    <div>[Mọi người đã không còn ưa chuộng Nhà Ma nữa. Nghe lời chú, cứng đầu không có ích lợi gì đâu.] Khi chú Từ thấy mấy lá thư trên tay Trần Ca, lực nắm trên vai Trần Ca giảm dần. [Con còn trẻ; con vẫn có thể bắt đầu lại từ đầu với nghề khác, sao con lại tự hành hạ bản thân vậy?]</div>\r\n    <div>[Chú Từ, con biết chú có ý tốt cho con, nhưng Ngôi Nhà Ma này mang ý nghĩa đặc biệt với con. Con đoán rằng con vẫn chưa muốn buông đi ký ức cuối của ba mẹ con.] Trần Ca thốt ra bằng giọng nhỏ như thể sợ người khác nghe thấy.</div>\r\n    <div>Là quản lý công viên, ông biết về sự biến mất của bố mẹ Trần Ca. Ông không trả lời ngay. Sau vài giây, ông thở dài và nói, [Được rồi, chú hiểu cảm giác của con. Chú sẽ cố hết sức để nói với ban quản lý để xem họ có có thể cho con thêm vài tuần không.]</div>\r\n    <div>[Cảm ơn, chú Từ!]</div>\r\n    <div>[Đừng cảm ơn vội, con nên đảm bảo số lượng vé bán tăng không thì kết cục cũng không đổi đâu.]</div>\r\n    <div>Sau khi tiễn quản lý công viên đi khỏi, Trần Ca trở lại Nhà Ma để bắt đầu bảo dưỡng trang bị và dọn dẹp hằng ngày.</div>\r\n    <div>[Máu giả trong phòng bảo trì sắp hết; mình phải mua thêm mẻ mới.</div>\r\n    <div>[Nếu hành lang chỉnh nghiêng qua một chút, thì sẽ tạo điểm mù tốt hơn để dọa khách.]</div>\r\n    <div>[A chết, con rối này hỏng mất rồi; mình phải sửa nó sau.</div>\r\n    <div>[F*ck! Bóng đèn tuan trước mình lap ở đây đau roi? Thang nào trộm mất !? ]</div>\r\n    <div>Trong mất người ngoài, anh là chủ Ngôi Nhà Ma, một nhà doanh nghiệp trẻ theo một cách nào đó, nhưng chỉ bản thân Trần Ca biết sự khó khăn trong việc duy trì một Ngôi Nhà Ma. Nhà Ma là một hình thức giải trí. Đặt trong một môi trường đáng sợ, cơ thể lẫn tâm lý của một người sẽ được duy trì trong trạng thái cao độ, nhưng khi sì trét được giải tỏa, nó sẽ dẫn đến sự nhẹ nhõm và sự thỏa mãn; nó cũng giống mát xa theo một nghĩa.</div>\r\n    <div>Thường thường, chủ yếu các Ngôi Nhà Ma đều chỉ có một mẹo chuyển để có thể thu hút thêm nhiều mẻ khách mới. Nhà Ma cố định ở một chỗ như của Trần Ca phải có độ nổi tiếng cao để thu hút khách, không thì họ sẽ khó sống sót được lâu. Việc anh đã cẩm cự được lâu như vậy, theo một cách, đã là kỳ tích.</div>\r\n    <div>Kéo lê con rối bị hỏng, Trần Ca đi vào phòng bảo trì. Anh đã học Thiết Kế Đồ Chơi ở đại học, mọi máy móc và bẫy dùng trong Nhà Ma đều là tự tay anh thiết kế và lắp ráp. Quá trình bảo trì, bao gồm may vá và sơn lại, đều khô khan và lặp lại.</div>\r\n    <div>[ Vẫn còn thiếu máu giả. Nếu mình nhớ không lầm, trong gác xếp vẫn còn tồn kho.] Nhà Ma được tách làm ba lầu; lầu thứ nhất và thứ hai là khung cảnh đáng sợ, trong khi lầu ba là kho lưu trữ.</div>\r\n    <div>Đẩy cánh cửa gỗ, ngoài khói gỗ vụn và bụi, có vô số các loại nguyên liệu và vật liệu không dùng tới bỏ lại bởi bố mẹ của Trần Ca khi họ còn quản lý Nhà Ma.</div>\r\n    <div>Không muốn đối mặt với quá khứ, Trần Ca hiếm khi lên đây.</div>\r\n    <div>[Giờ nhớ lại, đã gần nữa năm trôi qua rồi.]</div>\r\n    <div>Ngắm nhìn vô số thiết bị, Trần Ca nhớ lại tuổi thơ của anh. Thời gian đó, gia đình anh đã điều hành một Ngôi Nhà Ma di động, nên anh có cơ hội đi khắp nước với bố mẹ anh. Khi họ bận rộn, họ sẽ để Trần Ca một mình ở hậu trường đồng hành với vô số loại ma quỷ, nên Trần Ca đã được rèn luyện sự gan dạ từ khi còn nhỏ.</div>\r\n    <div>Xét cho cùng thì, khi bạn bè trang lứa đang chơi với Lego và xêp hình, thì anh lại chạy lung tung với cái đâu người giả.</div>\r\n    <div>[Đó là những ký ức quá giá.</div>\r\n    <div>Trần Ca lang thang không mục đích cho tới khi tìm được cái hộp gỗ chứa đựng những di vật của bố mẹ anh. Bên trong là chiếc điện thoại màu đen và một con bút bê thô sơ. Con búp bê này là đồ chơi đầu tiên mà anh làm khi còn nhỏ, nhưng anh không có ký ức nào về chiếc điện thoại. Cả hai đều được tìm thấy trong bệnh viện bỏ hoang ở miền quê, và lý do tại sao bố mẹ anh lại đi đến đó giữa đêm khuya, tới cảnh sát còn không thể đưa anh câu trả lời.</div>\r\n    <div>[ Cả hai người đang ở đâu?] Trần Ca nhặt con búp bê lên và nhéo cái má phinh phính của nó. Thở dài, anh tự nhủ, [Mình nên đi tìm đống máu giả đó, neu mình không song sót qua mua, mình sẽ thật sự tạm biệt Ngôi Nhà Ma này.</div>\r\n    <div>Trần Ca đang tự nói với bản thân, nhưng anh nói tới đây, chiếc điện thoại đen, từ nãy giờ im lăng trong hộp, đột nhiên ánh lên một ánh đèn mờ lạnh lẽo.</div>\r\n    <div>[ Chuyện gì đang xảy ra vậy? Công nghệ đen hay hiện tượng siêu nhiên? Nêu chuyện này xảy ra với người khác, chắc hằn người đó đã vừa chạy vừa la làng rồi, song, phản ứng của Trần Ca bình tĩnh hơn nhiều. Anh cầm chiếc điện thoại lên và kiểm tra nó gần hơn.</div>\r\n    <div>[ Lạ thật. Mình đã thử mở cái điện thoại này hơn cả trăm lần, nhưng không tác dụng, tại sao hôm nay nó lại tự mở lên? Cái điện thoại này được tìm thấy ở nơi bố mẹ mình mất tích, có khi nào họ biết mình đang gặp rắc rối nên liên lạc để giúp mình?]</div>\r\n    <div>Trần Ca trượt mở điện thoại, giao diện chính chỉ có hình nền màu đen, và chỉ có duy nhất một app hiện diện. Icon của app có hình dạng Ngôi Nhà Ma.</div>\r\n    <div>[Khoan đã ... Cái này nhìn quen quen, y hệt trước cong chính Ngôi Nhà Ma của mình]</div>\r\n    <div>Trong khi cau mày, Trần Ca chạm mở app, và với một hàng chữ nhìn như máu xuất hiện trên màn hình - Bạn có tin trên đời này có Ma?</div>\r\n    <div>Nói một cách khách quan, đây là câu hỏi triết học trừu tượng; đối với học sinh khoa kỹ sư như Trần Ca, câu hỏi này hầu như không thể trả lời.</div>\r\n    <div>[ Chắc là có?] Trần Ca lẩm bẩm, vài giây sau, một dòng chữ mới hiện lên màn hình.</div>\r\n    <div>Cái bạn tin chính là câu trả lời. Từ lúc này trở đi, bạn sẽ chính thức là chủ nhân mới của Ngôi Nhà Ma. Tất nhiên, đây không phải là thứ đáng để ăn mừng. Trước khi kết thúc hướng dẫn, xin hãy nghe lời khuyên cuối của tôi: tự sát là hình vi hèn nhát nhất, hãy cố hết sức để sống sót! ]</div>\r\n    <div>[ Cái gì là cái gì? Nhưng cái cách hành văn này hơi giống ba của mình.]</div>\r\n    <div>Trần Ca chạm vào app lần nữa, một cửa sổ mới xuất hiện.</div>\r\n    <div>Ngôi Nhà Ma Am phía Tây Cửu Giang</div>\r\n    <div>Trạng thái: Sắp đóng cửa</div>\r\n    <div>Danh tiếng tôt: Không</div>\r\n    <div>Khách thăm hằng ngày: Bốn</div>\r\n    <div>Khách thăm hằng tháng: Mười</div>\r\n    <div>Đội ngũ Ma và Xác Sông của tôi: Không có</div>\r\n    <div>Dụng cụ của tôi: Không có</div>\r\n    <div>Danh hiện đã mở khóa: Không có</div>\r\n    <div>Khung cảnh sẵn có: [Mảnh Set]:</div>\r\n    <div>- Đêm của người chết-</div>\r\n    <div>Đạo cụ kinh khủng, diễn viên không được đào tạo, không có cốt truyện đọc được và phi logic. Mức độ đáng sợ: 0*</div>\r\n    <div>-Minh hôn [Hôn Lễ Âm Giới]</div>\r\n    <div>- Cặp đôi bị chia lìa ở Địa Giới, trói buộc với nhau vĩnh viễn ở Âm Giới; sẽ chia cùng nấm mồ, theo đuổi hạnh phúc trong cái chết. Mức độ đáng sợ: 0,5</div>\r\n    <div>Khung cảnh có thể mở khóa:</div>\r\n    <div>- Án mạng giữa đêm</div>\r\n    <div>- Một bệnh nhân tâm thần nguy hiểm đi lang thang khắp căn hộ bỏ hoang. Kéo và Búa trong tay, hằn chỉ quanh quấn bên ngoài cửa phòng bạn thôi. Mức độ đáng sợ: 1+</div>\r\n    <div>- Sảnh bệnh thứ Ba</div>\r\n    <div>- Có nhiều tiếng động không thể giải thích phát ra từ bệnh viện bỏ hoang này mỗi đêm. Là một phóng viên báo chí, nhiệm vụ của bạn là giải mã bí ẩn đen tối này. Mức độ đáng sợ: 3*</div>\r\n    <div>- Xe tang bị ám</div>\r\n    <div>- Lên xe tang vác theo quan tài, nếu không thể trốn thoát trong vòng một giờ, bạn sẽ vĩnh viễn kẹt trong xe tang. Mức độ đáng sợ: 2+</div>\r\n    <div>Nhiệm vụ hàng ngày: Hoàn thành nhiệm vụ hàng ngày được cung cấp bởi Ngôi Nhà Ma để mở khóa thêm nhiều khung cảnh đáng sợ. Phần thưởng sẽ tương ứng với độ khó của nhiệm vụ.</div>\r\n    <div>Điều kiện mở rộng Nhà Ma: Khách thăm hàng tháng hơn 100. Danh tiếng tốt hơn 60 phần trăm. (Sau 3 lần mở rộng, Nhà Ma sẽ nâng cấp thành Mê Cung Ám Ảnh.)</div>\r\n    <div>Vòng quay vận rủi (Tiêu dùng điểm sợ hãi được tạo bởi khách thăm để quay): Luật lệ của sự sống và cái chết chưa bao giờ là quyền phán quyết của con người; Vận May và Điềm Rủi chỉ cách nhau một li. Chúng tôi có Trái Linh Hồn để tăng tuổi thọ bạn và các Bóng Ma Tai Họa đầy lòng thù hận!</div>\r\n    <div>Chức năng khác: Chưa mở khóa.</div>", true, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6936), 2, "Ngôi nhà ma ám đang suy tàn", 0 },
+                    { 4, 2, "    <div>App có Icon Ngôi Nhà Ma, nhìn tương tự các game quản lý trên điện thoại; tuy nhiên, thay vì quản lý khách sạn, công viên thủy sinh hay cửa hàng thú nuôi, nó lại là quản lý Nhà Ma.</div>\r\n    <div>Trần Ca nhìn chằm chằm vào màn hình và tự hỏi. Tại sao chiếc điện thoại để lại bởi bố mẹ mình lại có cái app kì lạ này?</div>\r\n    <div>Anh nhìn qua giao diện của app, tất cả thông tin đều trùng khớp với hoàn cảnh Ngôi Nhà Ma của anh. Việc này tạo cho Trần Ca cảm giác kỳ lạ, cứ như quản lý Nhà Ma trong game không khác với cái mà anh đang quản lý hiện tại.</div>\r\n    <div>Cả hai đều hết thời và đối mặt với nguy cơ phải đóng cửa; đơn giản là có quá nhiều điểm tương đồng giữa cả hai.</div>\r\n    <div>[ Có thể nào game này được tạo ra dựa trên Nhà Ma của mình? Vậy có nghĩa là nếu có sự thay đổi trong game, hiện thực cũng bị ảnh hưởng?] Trần Ca lẩm bẩm.</div>\r\n    <div>Trần Ca tiếp tục đọc; khung cảnh hiện tại của Nhà Ma, Đêm của người chết, bị chỉ trích tàn nhẫn. Thậm chí khung cảnh Minh Hôn đã từng lên báo chỉ được đánh giá 0,5x .</div>\r\n    <div>[Nếu Minh Hôn chỉ được 0.5 , tưởng tượng đến độ đáng sợ của các khung cảnh đang chờ mở khóa cũng đủ làm mình nổi da gà.] Anh thử ấn vào mục tùy chọn, một cửa số hiện lên màn hình, báo rằng anh nần phải hoàn thành một số nhiệm vụ hằng ngày nhất định nếu muốn mở khóa thêm khung cảnh khác.</div>\r\n    <div>[ Có vẻ như giải pháp là nhiệm vụ hằng ngày, chỉ khi hoàn thành nhiệm vụ thì mình mới được mở khóa thêm khung cảnh. Bằng cách mở khóa thêm khung cảnh, mình sẽ có thể thu hút thêm khách hàng, cũng như mở rộng Nhà Ma. ] Trần Ca là người chơi mobile game hăng hái, anh nhanh chóng năm bắt luật lệ của game-tỷ lệ hoàn thành nhiệm vụ hằng ngày sẽ ảnh hưởng tới sự phát triển của Ngôi Nhà Ma.</div>\r\n    <div>Sau khi ấn vào Nhiệm vụ hằng ngày, có ba nhiệm vụ hiện lên:</div>\r\n    <div>Nhiệm vụ dễ: Có ba yếu tố chính để dựng lên một Ngôi Nhà Ma tốt- Cốt truyện, Khung cảnh và Tâm trạng. Một Ngôi Nhà Ma không có côt truyện là Nhà Ma không có sức sống, xin hãy hoàn thành bối cảnh cho hai khung cảnh, Đêm của người chết và Minh Hôn.</div>\r\n    <div>Nhiệm vụ thường: Sửa chữa toàn bộ ma-nơ-canh trong Nhà Ma trước nửa đêm.</div>\r\n    <div>Nhiệm vụ Ác Mộng: Tôi biết bạn vẫn chưa hoàn toàn tin vào sự tồn tại của Ma quỷ; nếu vậy, hay chúng ta chơi một trò chơi? Sự thật sẽ sáng tỏ trước mắt bạn.</div>\r\n    <div>Nhiệm vụ hằng ngày sẽ tái tạo mỗi ngày vào nửa đêm. Người dùng chỉ được chọn một nhiệm vụ mỗi ngày, phần thưởng sẽ tương ứng với độ khó của nhiệm vụ.</div>\r\n    <div>(Cảnh báo! Độ khó nhiệm vụ tỷ lệ thuận với độ nguy hiểm, xin hãy chọn cần thận!)</div>\r\n    <div>Sau khi đọc kỹ nhiệm vụ, Trần Ca há hốc ngạc nhiên. [Nhiệm vụ trong game phải hoàn thành trong đời thực mới được? Không phải đây là bằng chứng hoàn hảo cho việc game có thể ảnh hưởng thực tế !?</div>\r\n    <div>Để thử nghiệm, anh quyết định chọn một nhiệm vụ. Bởi vì phần thưởng được trao tương ứng với độ khó và anh chỉ có thể chọn một mỗi ngày, để có phần thưởng tốt nhất, anh phải chọn nhiệm vụ khó nhất. Tuy nhiên, cảnh báo đính kèm bên dưới nhiệm làm Trần Ca hơi lo lắng.</div>\r\n    <div>[Đây là lựa chọn khó. Mô tả của nhiệm vụ Ác Mộng quá mơ hổ; nghe như bẩy ây. Sao mình không bắt đâu bằng nhiệm vụ Thường? Sửa chữa toàn bộ đạo cụ hơi khó nhưng không phải bất khả thi.]</div>\r\n    <div>Trần Ca là người động tay động chân, sau khi quyết định, anh bắt đâu hành động. Túm lấy hộp dụng cụ và xô đựng máu giả, anh bắt đầu kiểm tra mọi ma-nơ-canh trong Nhà Ma.</div>\r\n    <div>Đêm đã xuống. Để tiết kiệm điện, Trần Ca thậm chí không bật đèn hành lang. Kẹp lấy đèn pin trong nách, Trần Ca lượn khắp Nhà Ma rộng lớn, sửa chữa toàn bộ ma-cơ-canh cần thiết.</div>\r\n    <div>Nếu có ai thấy được, chắc họ sẽ bị dọa tới mức phải gọi cảnh sát.</div>\r\n    <div>[Mình không nghĩ rang có qua nhiều ma-nơ-canh cần phải bảo trì tới vậy; Mình nên tăng tốc thôi!</div>\r\n    <div>Lúc 11:45 tối, Trần Ca nhận được thông báo hoàn thành nhiệm vụ từ điện thoại. [Bạn đã hoàn thành nhiệm vụ Thường. Để tâm đến các chi tiết sẽ đóng góp cho không khí đáng sợ. Chúc mừng, bạn đã nhận được phần thưởng nhiệm vụ- Nhạc Nền, Black Friday.]</div>\r\n    <div>[Khoan đã, hình như Black Friday là nhạc bị cấm ở nước ngoài? Theo tin đồn, nó có khả năng kỳ quái khiến cho người nghe có xu hướng tự sát, và bản gốc đã thất lạc từ lâu.] Trần Ca nhận ra trong mục dụng cụ có hình một chiếc CD. [Phần thưởng nhiệm vụ gì thế này, đừng nói toàn bộ đống này là chơi khăm?]</div>\r\n    <div>Anh ấn vào hình CD, một giai điệu mà anh chưa từng nghe vang lên tai. Giai điệu đẩy sự u ám, buồn rầu và cô đơn. Trần Ca cảm thấy thế giới quanh anh đang rời rạc ra, và anh đang đứng trên hành lang dài bất tận.</div>\r\n    <div>Khi bài hát kết thúc, lưng anh thấm đẫm mồ hôi. Anh mừng vì mình không chọn chế độ lặp, không thì anh đã bị kẹt bởi ảnh hưởng của giai điệu mãi rồi.</div>\r\n    <div>[F*ck, đây là thật! Đây là bài hát nguyên bản! ]</div>\r\n    <div>đời thật. Điều này đem lại cho Trần Ca một tia hi vọng. Anh dừng nhạc và lưu lại cần thận. Sau khi giải quyết mọi thứ, Trần Ca trở về phòng nghỉ để nghỉ ngơi.</div>\r\n    <div>Năm trên giường, mặc dù mệt, nhưng anh không cảm thấy buồn ngủ chút nào. Sau cùng thì, những thứ anh vừa trãi nghiệm cần chút thời gian để tiêu hóa.</div>\r\n    <div>Không hay biết, đã qua nửa đêm, và Trần Ca vẫn đang nhìn vô định lên trần nhà.</div>\r\n    <div>[Không ngủ được tí nào! Chán chường, anh lôi điện thoại đen ra. Nửa đêm đã qua, nên sẽ có nhiệm vụ hàng ngày mới chứ nhỉ?]</div>\r\n    <div>Anh mở app, và như đã mong đợi, có vài thay đổi ở mục Nhiệm vụ hàng ngày.</div>\r\n    <div>Nhiệm vụ Dễ: Nếu bạn muốn đem lại cho khách thăm những trãi nghiệm đáng sợ, thì bạn phải để tâm tới chuỗi sự kiện và nhịp độ của họ trong Nhà Ma. Dọa họ quá sớm sẽ khiến khách thăm mất đi hứng thú, đề nghị bạn nên lắp đặt một số thiết bị nhận dạng âm thanh hay máy quay để theo dõi tiên độ của khách thăm.</div>\r\n    <div>Nhiệm vụ Thường: một cây làm chăng lên non; một Ngôi Nhà Ma tôt cân được vận hành bởi đội ngũ nhân viên tốt. Chiêu mộ thêm nhân tài để trợ giúp cho hành trình của bạn.</div>\r\n    <div>Nhiệm vụ Ác Mộng: Tôi biết bạn vẫn chưa hoàn toàn tin vào sự tôn tại của Ma quỷ; nều vậy, hay chúng ta chơi một trò chơi? Sự thật sẽ sáng tỏ trước mắt bạn.</div>\r\n    <div>Nhiệm vụ hằng ngày sẽ tái tạo mỗi ngày vào giửa đêm. Người dùng chỉ được chọn một nhiệm vụ mỗi ngày, phần thưởng sẽ tương ứng với độ khó của nhiệm vụ.</div>\r\n    <div>(Cảnh báo! Độ khó nhiệm vụ tỷ lệ thuận với độ nguy hiểm, xin hãy chọn cẩn thận!)</div>\r\n    <div>Ba nhiệm vụ mới có chút trở ngại trong kê hoạch của anh.</div>\r\n    <div>Nhiệm vụ Dễ là lắp thêm máy quay trong Nhà Ma; cái này có thể thực hiện bằng tiền, nhưng vấn để là ... Ngân sách hiện tại của Trần Ca có hơi hạn chế.</div>\r\n    <div>Nhiệm vụ Thường cũng không dễ dàng lắm. Hai nhân viên dày dặn, người đã vượt qua bao sóng gió cùng anh, vừa nghỉ việc. Và thậm chí nếu anh tuyển thêm nhân viên lúc này, sẽ mất vài ngày để hoàn thành huấn luyện. Khi nhân viên mới có thể phụ giúp Nhà Ma, chỗ này chắc cũng đã dẹp mất rồi.</div>\r\n    <div>Do nhiệm vụ Dễ và nhiệm vụ Thường đều không thể làm được, Trần Ca dán mắt vào nhiệm vụ cuối cùng.</div>\r\n    <div>[Nếu nhiệm vụ càng khó phần thì thưởng càng tốt, mình có nên thử nhiệm vụ Ác Mộng không nhỉ?]</div>", true, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6937), 2, "Nhiệm vụ hằng ngày kỳ lạ", 0 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "StoryFollowers",
+                columns: new[] { "FollowId", "CreatedAt", "StoryId", "UserId" },
+                values: new object[] { -1, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6963), 1, 2 });
+
+            migrationBuilder.InsertData(
+                table: "ReadingProgresses",
+                columns: new[] { "ProgressId", "CreatedAt", "CurrentChapterId", "CurrentStoryId", "LastReadAt", "LastReadPosition", "TotalChaptersRead", "TotalStoriesRead", "UpdatedAt", "UserId" },
+                values: new object[] { -1, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6982), 1, 1, new DateTime(2026, 4, 1, 11, 34, 15, 742, DateTimeKind.Utc).AddTicks(6984), 150, 1, 1, null, 2 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookmarks_ChapterId",
+                table: "Bookmarks",
+                column: "ChapterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookmarks_StoryId",
+                table: "Bookmarks",
+                column: "StoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookmarks_UserId",
+                table: "Bookmarks",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookmarks_UserId_StoryId",
+                table: "Bookmarks",
+                columns: new[] { "UserId", "StoryId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_IsActive",
+                table: "Categories",
+                column: "IsActive");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chapters_PublishedAt",
+                table: "Chapters",
+                column: "PublishedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chapters_StoryId",
+                table: "Chapters",
+                column: "StoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Chapters_StoryId_ChapterNumber",
+                table: "Chapters",
+                columns: new[] { "StoryId", "ChapterNumber" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_CreatedAt",
+                table: "Comments",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_StoryId",
+                table: "Comments",
+                column: "StoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_ChapterId",
+                table: "Notifications",
+                column: "ChapterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_CreatedAt",
+                table: "Notifications",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_StoryId",
+                table: "Notifications",
+                column: "StoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId_IsRead",
+                table: "Notifications",
+                columns: new[] { "UserId", "IsRead" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_StoryId",
+                table: "Ratings",
+                column: "StoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_UserId",
+                table: "Ratings",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ratings_UserId_StoryId",
+                table: "Ratings",
+                columns: new[] { "UserId", "StoryId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReadingModes_UserId",
+                table: "ReadingModes",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReadingProgresses_CurrentChapterId",
+                table: "ReadingProgresses",
+                column: "CurrentChapterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReadingProgresses_CurrentStoryId",
+                table: "ReadingProgresses",
+                column: "CurrentStoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReadingProgresses_UserId",
+                table: "ReadingProgresses",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stories_AuthorId",
+                table: "Stories",
+                column: "AuthorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stories_CategoryId",
+                table: "Stories",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stories_ViewCount",
+                table: "Stories",
+                column: "ViewCount");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StoryFollowers_StoryId",
+                table: "StoryFollowers",
+                column: "StoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StoryFollowers_UserId",
+                table: "StoryFollowers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StoryFollowers_UserId_StoryId",
+                table: "StoryFollowers",
+                columns: new[] { "UserId", "StoryId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
+                unique: true);
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "Bookmarks");
+
+            migrationBuilder.DropTable(
+                name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "Ratings");
+
+            migrationBuilder.DropTable(
+                name: "ReadingModes");
+
+            migrationBuilder.DropTable(
+                name: "ReadingProgresses");
+
+            migrationBuilder.DropTable(
+                name: "StoryFollowers");
+
+            migrationBuilder.DropTable(
+                name: "Chapters");
+
+            migrationBuilder.DropTable(
+                name: "Stories");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+        }
+    }
+}

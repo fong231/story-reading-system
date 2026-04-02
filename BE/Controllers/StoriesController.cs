@@ -41,6 +41,14 @@ namespace BE.Controllers
             return Ok(stories);
         }
 
+        // GET: api/Stories/Author/1
+        [HttpGet("Author/{authorId}")]
+        public async Task<ActionResult<IEnumerable<object>>> GetStoriesByAuthor(int authorId)
+        {
+            var stories = await _storyService.GetStoriesByAuthorAsync(authorId);
+            return Ok(stories);
+        }
+
         // POST: api/Stories
         [HttpPost]
         public async Task<ActionResult<Story>> CreateStory([FromBody] CreateStoryDto dto)

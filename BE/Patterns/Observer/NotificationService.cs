@@ -113,6 +113,12 @@ namespace BE.Patterns.Observer
             return true;
         }
 
+        public async Task<bool> IsFollowingAsync(int userId, int storyId)
+        {
+            return await _context.StoryFollowers
+                .AnyAsync(sf => sf.UserId == userId && sf.StoryId == storyId);
+        }
+
         // Get user notifications
         public async Task<List<Notification>> GetUserNotificationsAsync(int userId, bool unreadOnly = false)
         {

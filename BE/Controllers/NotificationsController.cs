@@ -42,6 +42,13 @@ namespace BE.Controllers
                 return NotFound(new { message = "Not following this story" });
         }
 
+        // GET: api/Notifications/IsFollowing/User/5/Story/10
+        [HttpGet("IsFollowing/User/{userId}/Story/{storyId}")]
+        public async Task<ActionResult<bool>> IsFollowing(int userId, int storyId)
+        {
+            return await _notificationService.IsFollowingAsync(userId, storyId);
+        }
+
         // ================================================================
         // Get Notifications
         // ================================================================

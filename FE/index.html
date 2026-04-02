@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Hệ Thống Đọc Truyện - Trang Chủ</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/notifications.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/layout.css">
     <style>
         .story-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .story-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer;}
@@ -16,6 +20,8 @@
         <div class="logo">📖 StoryReader</div>
         <div class="controls">
             <span id="user-greeting" style="margin-right: 15px;"></span>
+            <a href="upload-story.html" style="margin-right: 15px; color: yellow; text-decoration: none;">Đăng Truyện</a>
+            <a href="export-report.html" id="btn-export-report" style="margin-right: 15px; color: #00ff00; text-decoration: none;">Xuất Báo Cáo</a>
             <div class="notification">🔔 <span id="noti-badge" class="badge hidden">0</span></div>
             <button onclick="localStorage.removeItem('currentUser'); window.location.href='login.html'">Đăng xuất</button>
         </div>
@@ -34,6 +40,7 @@
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/patterns/Observer.js"></script>
     <script src="js/home.js"></script>
 </body>
