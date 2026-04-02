@@ -4,10 +4,15 @@ Hệ thống đọc truyện trực tuyến được xây dựng bằng **ASP.NE
 
 ---
 
-## 🛠 Yêu cầu hệ thống
+## 🛠 Yêu cầu hệ thống (chọn 1 trong 2)
+### 1. Cài theo bộ (khuyên dùng)
+- Visual Studio 2022 (.NET 8.0 SDK và SQL Server được tích hợp sẵn)
+- Extension **Live Server** (cho VS Code)
+
+### 2. Cài riêng lẻ
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 - [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (Khuyên dùng LocalDB cho môi trường phát triển)
-- [Visual Studio Code](https://code.visualstudio.com/) hoặc Visual Studio 2022
+- [Visual Studio Code](https://code.visualstudio.com/)
 - Extension **Live Server** (cho VS Code)
 
 ---
@@ -35,6 +40,8 @@ Bạn có thể chạy Backend theo một trong hai cách dưới đây:
    ```bash
    dotnet run
    ```
+   **Hoặc**
+   - Vào `visual studio` mở `BE.sln` trong thư mục `BE` và ấn **f5** (chế độ https) để chạy
 
 ### Cách 2: Chạy khi đã có sẵn Project trên máy
 1. **Mở thư mục `BE`** của project bằng Terminal hoặc Command Prompt:
@@ -46,6 +53,11 @@ Bạn có thể chạy Backend theo một trong hai cách dưới đây:
    dotnet restore
    dotnet run
    ```
+   **Hoặc**
+   ```bash
+   dotnet restore
+   ```
+   - Vào `visual studio` mở `BE.sln` trong thư mục `BE` và ấn **f5** (chế độ https) để chạy
 
 > **Lưu ý:** Sau khi chạy thành công, Backend mặc định sẽ chạy tại: `https://localhost:7210` hoặc `http://localhost:7210`. Bạn có thể truy cập `https://localhost:7210/swagger` để xem tài liệu API.
 
