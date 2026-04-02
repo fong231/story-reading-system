@@ -1,25 +1,27 @@
-const BACKEND_URL = "https://localhost:7210"; 
+const BACKEND_URL = "https://localhost:7210";
 
-const currentUser = JSON.parse(localStorage.getItem("currentUser")) || { userId: 3 }; 
-const CURRENT_USER_ID = currentUser.userId; 
+const currentUser = JSON.parse(localStorage.getItem("currentUser")) || { userId: 3 };
+const CURRENT_USER_ID = currentUser.userId;
 const urlParams = new URLSearchParams(window.location.search);
-const CURRENT_STORY_ID = parseInt(urlParams.get('storyId')); 
+const CURRENT_STORY_ID = parseInt(urlParams.get('storyId'));
 const CURRENT_CHAPTER_ID = parseInt(urlParams.get('chapterId'));
+
+let IS_BOOKMARKED = false;
 
 class ReaderContext {
     constructor(container) { this.container = container; this.strategy = null; }
     setStrategy(strategy) { this.strategy = strategy; this.strategy.apply(this.container); }
-    
+
     setReadingMode(theme, nav) {
         const modeString = `${theme}-${nav}`;
-        switch(modeString) {
+        switch (modeString) {
             case 'day-scroll': this.setStrategy(new DayScrollStrategy()); break;
             case 'night-scroll': this.setStrategy(new NightScrollStrategy()); break;
             case 'day-flip': this.setStrategy(new DayFlipStrategy()); break;
             case 'night-flip': this.setStrategy(new NightFlipStrategy()); break;
         }
     }
-    
+
     setFontSize(size) { this.container.style.fontSize = size + 'px'; this.strategy && this.strategy.recalculateHeight(this.container); }
     setFontFamily(family) { this.container.style.fontFamily = family; }
     setLineHeight(height) { this.container.style.lineHeight = height; this.strategy && this.strategy.recalculateHeight(this.container); }
@@ -28,7 +30,16 @@ class ReaderContext {
         const content = document.getElementById('chapter-content');
         if (content && content.classList.contains('mode-flip')) {
             const width = content.clientWidth;
-            content.scrollBy({ left: width + 40, behavior: 'smooth' });
+            const gap = 40;
+            const step = width + gap;
+
+            const currentPage = Math.round(content.scrollLeft / step);
+            const targetScroll = (currentPage + 1) * step;
+
+            content.scrollTo({
+                left: targetScroll,
+                behavior: 'smooth'
+            });
         }
     }
 
@@ -36,7 +47,16 @@ class ReaderContext {
         const content = document.getElementById('chapter-content');
         if (content && content.classList.contains('mode-flip')) {
             const width = content.clientWidth;
-            content.scrollBy({ left: -(width + 40), behavior: 'smooth' });
+            const gap = 40;
+            const step = width + gap;
+
+            const currentPage = Math.round(content.scrollLeft / step);
+            const targetScroll = (currentPage - 1) * step;
+
+            content.scrollTo({
+                left: Math.max(0, targetScroll),
+                behavior: 'smooth'
+            });
         }
     }
 }
@@ -104,7 +124,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const fontFamilySelect = document.getElementById("font-family-select");
     const lineHeightSelect = document.getElementById("line-height-select");
     const btnUndo = document.getElementById("btn-undo"), btnRedo = document.getElementById("btn-redo");
-    
+
     const readerContext = new ReaderContext(container);
     const invoker = new SettingsInvoker();
 
@@ -132,9 +152,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         lineHeightSelect.value = s.lineHeight;
     };
 
-    const updateBtns = () => { 
-        btnUndo.disabled = !invoker.canUndo(); 
-        btnRedo.disabled = !invoker.canRedo(); 
+    const updateBtns = () => {
+        btnUndo.disabled = !invoker.canUndo();
+        btnRedo.disabled = !invoker.canRedo();
     };
 
     const closeModal = () => {
@@ -166,7 +186,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     applyToUI(currentSettings);
     syncInputs(currentSettings);
-    
+
     // Quan trọng: Reset lịch sử undo/redo khi mới vào để mốc đầu tiên là dữ liệu từ Backend
     invoker.clearHistory();
     updateBtns();
@@ -210,10 +230,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Tạo Command để lưu vào Stack (phục vụ undo/redo)
         const oldSettingsForCmd = { ...currentSettings, mode: `${currentSettings.theme}-${currentSettings.navMode}` };
         const newSettingsForCmd = { ...newSettings, mode: `${newSettings.theme}-${newSettings.navMode}` };
-        
+
         const cmd = new ChangeReadingModeCommand(readerContext, newSettingsForCmd, oldSettingsForCmd);
         invoker.executeCommand(cmd);
-        
+
         // Cập nhật mốc cài đặt hiện tại
         currentSettings = newSettings;
         updateBtns();
@@ -242,32 +262,32 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Lỗi lưu backend", e);
             showToast("Lỗi kết nối máy chủ!", "error");
         }
-        
+
         // Đóng modal mà không gọi lại applyToUI(currentSettings) của hàm closeModal mặc định
         modal.style.display = "none";
     });
 
     // Undo/Redo: Khi nhấn nút này, currentSettings cũng được cập nhật theo
     btnUndo.addEventListener("click", () => {
-        const s = invoker.undo(); 
-        if(s){ 
+        const s = invoker.undo();
+        if (s) {
             const parts = s.mode.split('-');
             currentSettings = { ...s, theme: parts[0], navMode: parts[1] };
             applyToUI(currentSettings);
             syncInputs(currentSettings);
-            updateBtns(); 
+            updateBtns();
             showToast("Đã hoàn tác!", "info");
         }
     });
 
     btnRedo.addEventListener("click", () => {
-        const s = invoker.redo(); 
-        if(s){ 
+        const s = invoker.redo();
+        if (s) {
             const parts = s.mode.split('-');
             currentSettings = { ...s, theme: parts[0], navMode: parts[1] };
             applyToUI(currentSettings);
             syncInputs(currentSettings);
-            updateBtns(); 
+            updateBtns();
             showToast("Đã làm lại!", "info");
         }
     });
@@ -275,36 +295,73 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 6. CÁC LOGIC KHÁC (Progress, Bookmark, Comment...)
     try {
         const progRes = await fetch(`${BACKEND_URL}/api/Reading/Progress/${CURRENT_USER_ID}`);
-        if(progRes.ok) {
+        if (progRes.ok) {
             const progData = await progRes.json();
-            if(progData.currentChapterId === CURRENT_CHAPTER_ID && progData.lastReadPosition > 0) {
+            if (progData.currentChapterId === CURRENT_CHAPTER_ID && progData.lastReadPosition > 0) {
                 window.scrollTo({ top: progData.lastReadPosition, behavior: 'smooth' });
             }
         }
-    } catch(e) {}
+    } catch (e) { }
 
     let scrollTimeout;
     window.addEventListener("scroll", () => {
-        if(scrollTimeout) clearTimeout(scrollTimeout);
+        if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
             fetch(`${BACKEND_URL}/api/Reading/Progress`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: CURRENT_USER_ID, storyId: CURRENT_STORY_ID, chapterId: CURRENT_CHAPTER_ID, position: Math.round(window.scrollY) })
             });
-        }, 2000); 
+        }, 2000);
     });
+
+    const checkBookmarkStatus = async () => {
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/Bookmarks/User/${CURRENT_USER_ID}`);
+            if (res.ok) {
+                const bookmarks = await res.json();
+                IS_BOOKMARKED = bookmarks.some(b => b.story.storyId === CURRENT_STORY_ID);
+                updateBookmarkButton();
+            }
+        } catch (e) { }
+    };
+
+    const updateBookmarkButton = () => {
+        const btn = document.getElementById("btn-bookmark");
+        if (IS_BOOKMARKED) {
+            btn.textContent = "❌ Bỏ đánh dấu trang";
+            btn.style.background = "#e74c3c";
+        } else {
+            btn.textContent = "🔖 Bookmark (Đánh dấu trang)";
+            btn.style.background = "#e67e22";
+        }
+    };
 
     document.getElementById("btn-bookmark").addEventListener("click", async () => {
         try {
-            const res = await fetch(`${BACKEND_URL}/api/Bookmarks`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: CURRENT_USER_ID, storyId: CURRENT_STORY_ID, chapterId: CURRENT_CHAPTER_ID, scrollPosition: Math.round(window.scrollY) })
-            });
-            if (res.ok) {
-                showToast("Đã bookmark thành công!", "success");
+            if (IS_BOOKMARKED) {
+                // Xóa bookmark
+                const res = await fetch(`${BACKEND_URL}/api/Bookmarks/User/${CURRENT_USER_ID}/Story/${CURRENT_STORY_ID}`, {
+                    method: 'DELETE'
+                });
+                if (res.ok) {
+                    showToast("Đã bỏ bookmark!", "success");
+                    IS_BOOKMARKED = false;
+                    updateBookmarkButton();
+                }
+            } else {
+                // Lưu bookmark
+                const res = await fetch(`${BACKEND_URL}/api/Bookmarks`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: CURRENT_USER_ID, storyId: CURRENT_STORY_ID, chapterId: CURRENT_CHAPTER_ID, scrollPosition: Math.round(window.scrollY) })
+                });
+                if (res.ok) {
+                    showToast("Đã bookmark thành công!", "success");
+                    IS_BOOKMARKED = true;
+                    updateBookmarkButton();
+                }
             }
-        } catch(e) { showToast("Lỗi kết nối!", "error"); }
+        } catch (e) { showToast("Lỗi kết nối!", "error"); }
     });
 
     document.getElementById("btn-back").addEventListener("click", () => {
@@ -316,13 +373,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const loadComments = async () => {
         const res = await fetch(`${BACKEND_URL}/api/Comments/Story/${CURRENT_STORY_ID}`);
-        if(!res.ok) return;
+        if (!res.ok) return;
         const comments = await res.json();
-        document.getElementById("comment-list").innerHTML = comments.map(c => `<p><b>User ${c.userId}:</b> ${c.content}</p>`).join('');
+        document.getElementById("comment-list").innerHTML = comments.map(c => `<p><b>${c.user ? c.user.username : 'Ẩn danh'}:</b> ${c.content}</p>`).join('');
     };
     document.getElementById("btn-submit-comment").addEventListener("click", async () => {
         const text = document.getElementById("comment-text").value;
-        if(!text) return showToast("Vui lòng nhập bình luận!", "info");
+        if (!text) return showToast("Vui lòng nhập bình luận!", "info");
         try {
             const res = await fetch(`${BACKEND_URL}/api/Comments`, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -335,6 +392,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
         } catch (e) { showToast("Lỗi gửi bình luận!", "error"); }
     });
+
+    await checkBookmarkStatus();
     loadComments();
 
     const observer = new NotificationObserver("noti-badge");

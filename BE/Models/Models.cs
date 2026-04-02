@@ -95,10 +95,12 @@ namespace BE.Models
         [ForeignKey("CategoryId")]
         public virtual Category Category { get; set; }
 
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<Chapter> Chapters { get; set; } = new List<Chapter>();
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public virtual ICollection<Rating> Ratings { get; set; } = new List<Rating>();
         public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
         public virtual ICollection<StoryFollower> Followers { get; set; } = new List<StoryFollower>();
     }
@@ -129,9 +131,11 @@ namespace BE.Models
 
         // Navigation properties
         [ForeignKey("StoryId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Story Story { get; set; }
 
         public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
     }
 
@@ -225,6 +229,7 @@ namespace BE.Models
         public virtual User User { get; set; }
 
         [ForeignKey("StoryId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Story Story { get; set; }
 
         [ForeignKey("ChapterId")]
@@ -256,6 +261,7 @@ namespace BE.Models
         public virtual User User { get; set; }
 
         [ForeignKey("StoryId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Story Story { get; set; }
     }
 
@@ -283,6 +289,7 @@ namespace BE.Models
         public virtual User User { get; set; }
 
         [ForeignKey("StoryId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Story Story { get; set; }
     }
 
@@ -316,9 +323,11 @@ namespace BE.Models
         public virtual User User { get; set; }
 
         [ForeignKey("StoryId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Story Story { get; set; }
 
         [ForeignKey("ChapterId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Chapter Chapter { get; set; }
     }
 
@@ -343,6 +352,7 @@ namespace BE.Models
         public virtual User User { get; set; }
 
         [ForeignKey("StoryId")]
+        [System.Text.Json.Serialization.JsonIgnore]
         public virtual Story Story { get; set; }
     }
 }

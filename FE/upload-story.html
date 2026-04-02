@@ -9,8 +9,130 @@
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/layout.css">
     <style>
-        .form-group { margin-bottom: 15px; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; margin-top: 5px;}
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+        .navbar {
+            height: 60px;
+        }
+        .main-wrapper {
+            display: flex;
+            height: calc(100vh - 60px);
+            background: #f4f7f6;
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            flex-shrink: 0;
+        }
+        .sidebar-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        .sidebar-item:hover {
+            background: #34495e;
+        }
+        .sidebar-item.active {
+            background: #3498db;
+            border-left: 4px solid #fff;
+        }
+        /* Content Styles */
+        .content-area {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        .section-panel {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .section-panel.active {
+            display: block;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group textarea { resize: vertical; }
+        .btn-submit {
+            width: 100%; 
+            padding: 14px; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 4px; 
+            font-weight: bold;
+            font-size: 16px;
+            transition: opacity 0.3s;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+        #btn-create-story { background: #007bff; color: white; }
+        #btn-publish-chapter { background: #28a745; color: white; }
+
+        /* Cover Upload Styles */
+        .cover-upload-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 2px dashed #ddd;
+            min-height: 250px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            overflow: hidden;
+        }
+        .cover-upload-container:hover {
+            border-color: #3498db;
+        }
+        #cover-preview {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            display: none;
+        }
+        .upload-icon { font-size: 40px; color: #999; }
+        
+        .btn-re-upload {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            transition: background 0.3s;
+        }
+        .btn-re-upload:hover {
+            background: rgba(0,0,0,0.8);
+        }
     </style>
 </head>
 <body>
@@ -20,67 +142,88 @@
             <a href="index.html" style="color: white; text-decoration: none;">⬅ Về Trang Chủ</a>
         </div>
     </header>
-    <main class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
-        <!-- Phần 1: Đăng Truyện Mới (Factory Pattern) -->
-        <section style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">🆕 Đăng Truyện Mới</h2>
-            
-            <div class="form-group">
-                <label>Tên truyện:</label>
-                <input type="text" id="story-title" placeholder="Nhập tên truyện...">
+
+    <div class="main-wrapper">
+        <aside class="sidebar">
+            <div class="sidebar-item active" data-target="section-create-story">
+                <span>🆕</span> Đăng Truyện Mới
             </div>
-
-            <div class="form-group">
-                <label>Mô tả:</label>
-                <textarea id="story-description" rows="4" placeholder="Nhập mô tả ngắn..."></textarea>
+            <div class="sidebar-item" data-target="section-publish-chapter">
+                <span>📖</span> Đăng Chương Mới
             </div>
+        </aside>
 
-            <div class="form-group">
-                <label>Thể loại:</label>
-                <select id="story-genre">
-                    <!-- Sẽ được load từ BE -->
-                </select>
-            </div>
+        <main class="content-area">
+            <!-- Phần 1: Đăng Truyện Mới -->
+            <section id="section-create-story" class="section-panel active">
+                <h2 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">🆕 Đăng Truyện Mới</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 300px; gap: 30px;">
+                    <div>
+                        <div class="form-group">
+                            <label>Tên truyện:</label>
+                            <input type="text" id="story-title" placeholder="Nhập tên truyện...">
+                        </div>
 
-            <div class="form-group">
-                <label>Link ảnh bìa:</label>
-                <input type="text" id="story-cover" placeholder="https://...">
-            </div>
+                        <div class="form-group">
+                            <label>Mô tả:</label>
+                            <textarea id="story-description" rows="6" placeholder="Nhập mô tả ngắn..."></textarea>
+                        </div>
 
-            <button id="btn-create-story" style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold;">
-                Tạo Truyện
-            </button>
-        </section>
+                        <div class="form-group">
+                            <label>Thể loại:</label>
+                            <select id="story-genre"></select>
+                        </div>
+                    </div>
 
-        <!-- Phần 2: Đăng Chương Mới (Observer Pattern) -->
-        <section style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">📖 Đăng Chương Mới</h2>
+                    <div class="form-group">
+                        <label>Ảnh bìa:</label>
+                        <div class="cover-upload-container" id="cover-container">
+                            <img id="cover-preview" src="" alt="Xem trước">
+                            <div id="upload-placeholder">
+                                <div class="upload-icon">📷</div>
+                                <p style="margin: 0; color: #666;">Nhấp để tải ảnh lên</p>
+                                <p style="margin: 5px 0 0; font-size: 12px; color: #999;">PNG, JPG hoặc WEBP</p>
+                            </div>
+                            <button type="button" class="btn-re-upload" id="btn-re-upload">Chọn lại</button>
+                        </div>
+                        <input type="file" id="story-cover-file" accept="image/*" style="display: none;">
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label>Chọn truyện:</label>
-                <select id="select-story"></select>
-            </div>
+                <button id="btn-create-story" class="btn-submit">Tạo Truyện</button>
+            </section>
 
-            <div class="form-group">
-                <label>Số chương:</label>
-                <input type="number" id="chapter-number" value="1">
-            </div>
+            <!-- Phần 2: Đăng Chương Mới -->
+            <section id="section-publish-chapter" class="section-panel">
+                <h2 style="margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">📖 Đăng Chương Mới</h2>
 
-            <div class="form-group">
-                <label>Tiêu đề chương:</label>
-                <input type="text" id="chapter-title" placeholder="Chương 1: Khởi đầu...">
-            </div>
+                <div class="form-group">
+                    <label>Chọn truyện:</label>
+                    <select id="select-story"></select>
+                </div>
 
-            <div class="form-group">
-                <label>Nội dung:</label>
-                <textarea id="chapter-content" rows="10" placeholder="Nội dung chương truyện..."></textarea>
-            </div>
+                <div style="display: grid; grid-template-columns: 120px 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label>Số chương:</label>
+                        <input type="number" id="chapter-number" value="1">
+                    </div>
 
-            <button id="btn-publish-chapter" style="width: 100%; padding: 12px; background: #28a745; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold;">
-                Xuất Bản Chương
-            </button>
-        </section>
-    </main>
+                    <div class="form-group">
+                        <label>Tiêu đề chương:</label>
+                        <input type="text" id="chapter-title" placeholder="Chương 1: Khởi đầu...">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nội dung:</label>
+                    <textarea id="chapter-content" rows="15" placeholder="Nội dung chương truyện..."></textarea>
+                </div>
+
+                <button id="btn-publish-chapter" class="btn-submit">Xuất Bản Chương</button>
+            </section>
+        </main>
+    </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="js/utils.js"></script>

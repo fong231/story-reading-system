@@ -6,6 +6,10 @@
     min-height: 400px;
 }
 
+#chapter-content div:empty::before {
+    content: "\00a0"; /* Non-breaking space giúp div rỗng có chiều cao như 1 dòng */
+}
+
 .theme-night {
     --bg-color: #1a1a1a;
     --text-color: #e0e0e0;
@@ -17,23 +21,19 @@
     max-height: none;
 }
 
-/* Chế độ lật trang (Flip) */
 .mode-flip {
     display: block;
-    /* column-width được set bằng JS (clientWidth px) để tạo đúng 1 cột/trang */
     column-gap: 40px;
     height: 70vh;
     overflow-x: auto;
     overflow-y: hidden;
-    /* Ẩn scrollbar ngang trên mọi trình duyệt */
-    -ms-overflow-style: none;  /* IE / Edge cũ */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 .mode-flip::-webkit-scrollbar {
-    display: none;             /* Chrome / Safari / Edge mới */
+    display: none;
 }
 
-/* Đổi giao diện trực tiếp, đảm bảo độ ưu tiên cao nhất */
 body.theme-night {
     background-color: #1a1a1a;
     color: #e0e0e0;

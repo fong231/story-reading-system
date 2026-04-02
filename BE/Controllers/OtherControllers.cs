@@ -323,6 +323,22 @@ namespace BE.Controllers
 
             return NoContent();
         }
+
+        // DELETE: api/Bookmarks/User/5/Story/10
+        [HttpDelete("User/{userId}/Story/{storyId}")]
+        public async Task<IActionResult> DeleteBookmarkByUserAndStory(int userId, int storyId)
+        {
+            var bookmark = await _context.Bookmarks
+                .FirstOrDefaultAsync(b => b.UserId == userId && b.StoryId == storyId);
+
+            if (bookmark == null)
+                return NotFound();
+
+            _context.Bookmarks.Remove(bookmark);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 
     // DTOs

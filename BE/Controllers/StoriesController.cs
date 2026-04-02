@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using BE.Models;
 using BE.Services;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System.Linq;
 
 namespace BE.Controllers
 {
@@ -9,10 +12,12 @@ namespace BE.Controllers
     public class StoriesController : ControllerBase
     {
         private readonly IStoryService _storyService;
+        private readonly IWebHostEnvironment _environment;
 
-        public StoriesController(IStoryService storyService)
+        public StoriesController(IStoryService storyService, IWebHostEnvironment environment)
         {
             _storyService = storyService;
+            _environment = environment;
         }
 
         // GET: api/Stories
@@ -51,17 +56,55 @@ namespace BE.Controllers
 
         // POST: api/Stories
         [HttpPost]
-        public async Task<ActionResult<Story>> CreateStory([FromBody] CreateStoryDto dto)
+        public async Task<ActionResult<Story>> CreateStory([FromForm] CreateStoryFormDto dto)
         {
-            var story = await _storyService.CreateStoryAsync(
-                dto.Title,
-                dto.Description,
-                dto.CoverImage,
-                dto.AuthorId,
-                dto.CategoryId
-            );
+            string coverImageUrl = dto.CoverImage; // Mặc định dùng URL nếu có
 
-            return CreatedAtAction(nameof(GetStory), new { id = story.StoryId }, story);
+            // Xử lý upload file nếu có
+            if (dto.CoverFile != null && dto.CoverFile.Length > 0)
+            {
+                var extension = Path.GetExtension(dto.CoverFile.FileName).ToLower();
+                
+                // Kiểm tra định dạng file (chỉ cho phép ảnh)
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                if (!allowedExtensions.Contains(extension))
+                {
+                    return BadRequest("Định dạng ảnh không hợp lệ. Chỉ chấp nhận .jpg, .jpeg, .png, .gif, .webp");
+                }
+
+                var uploadPath = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads");
+                
+                if (!Directory.Exists(uploadPath))
+                    Directory.CreateDirectory(uploadPath);
+
+                var fileName = $"{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(uploadPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.CoverFile.CopyToAsync(stream);
+                }
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                coverImageUrl = $"{baseUrl}/uploads/{fileName}";
+            }
+
+            try
+            {
+                var story = await _storyService.CreateStoryAsync(
+                    dto.Title,
+                    dto.Description,
+                    coverImageUrl,
+                    dto.AuthorId,
+                    dto.CategoryId
+                );
+
+                return CreatedAtAction(nameof(GetStory), new { id = story.StoryId }, story);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT: api/Stories/5
@@ -93,11 +136,12 @@ namespace BE.Controllers
     }
 
     // DTOs
-    public class CreateStoryDto
+    public class CreateStoryFormDto
     {
         public string Title { get; set; }
         public string Description { get; set; }
-        public string CoverImage { get; set; }
+        public string? CoverImage { get; set; } // Giữ lại để hỗ trợ URL nếu cần
+        public IFormFile? CoverFile { get; set; } // Hỗ trợ upload file
         public int AuthorId { get; set; }
         public int CategoryId { get; set; }
     }

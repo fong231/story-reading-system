@@ -65,7 +65,7 @@ class NotificationObserver {
                     message: n.message,
                     time: new Date(n.createdAt).toLocaleString(),
                     isRead: n.isRead,
-                    storyId: n.story.storyId
+                    storyId: n.storyId || (n.story ? n.story.storyId : null)
                 }));
                 localStorage.setItem('user_notifications', JSON.stringify(this.notifications));
                 this.updateBadge();
@@ -90,7 +90,7 @@ class NotificationObserver {
             console.log("🔔 CÓ THÔNG BÁO MỚI:", notification);
             // Hiển thị Toast thông báo nhanh
             if (typeof showToast === 'function') {
-                showToast(notification.message || notification, "info");
+                showToast(notification.message || (typeof notification === 'string' ? notification : "Thông báo mới"), "info");
             }
             this.addNotification(notification);
         });
@@ -109,9 +109,10 @@ class NotificationObserver {
     addNotification(notification) {
         const newNoti = {
             id: Date.now(),
-            message: notification.message || notification,
+            message: notification.message || (typeof notification === 'string' ? notification : "Thông báo mới"),
             time: new Date().toLocaleString(),
-            isRead: false
+            isRead: false,
+            storyId: notification.storyId || null
         };
         this.notifications.unshift(newNoti);
         if (this.notifications.length > 20) this.notifications.pop(); 
@@ -145,7 +146,7 @@ class NotificationObserver {
         }
 
         listEl.innerHTML = this.notifications.map(n => `
-            <div class="notification-item ${n.isRead ? '' : 'unread'}" onclick="window.location.href='story-detail.html?storyId=${n.storyId || ''}'">
+            <div class="notification-item ${n.isRead ? '' : 'unread'}" onclick="if(${n.storyId}) window.location.href='story-detail.html?storyId=${n.storyId}'; else window.location.href='index.html';">
                 <div>${n.message}</div>
                 <div style="font-size: 11px; color: #888; margin-top: 5px;">${n.time}</div>
             </div>
