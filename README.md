@@ -4,87 +4,41 @@ Hệ thống đọc truyện trực tuyến được xây dựng bằng **ASP.NE
 
 ---
 
-## 🛠 Yêu cầu hệ thống (chọn 1 trong 2)
-### 1. Cài theo bộ (khuyên dùng)
-- Visual Studio 2022 (.NET 8.0 SDK và SQL Server được tích hợp sẵn)
-- Extension **Live Server** (cho VS Code)
-
-### 2. Cài riêng lẻ
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (Khuyên dùng LocalDB cho môi trường phát triển)
-- [Visual Studio Code](https://code.visualstudio.com/)
-- Extension **Live Server** (cho VS Code)
+## 🛠 Yêu cầu hệ thống
+- **Visual Studio 2022** (đã cài đặt .NET 8.0 SDK và SQL Server Express/LocalDB).
+- **Visual Studio Code** (với extension **Live Server**) để chạy Frontend.
 
 ---
 
-## Hướng dẫn chạy Backend (ASP.NET Core)
+## 🚀 Hướng dẫn chạy Backend (ASP.NET Core)
 
-Bạn có thể chạy Backend theo một trong hai cách dưới đây:
+Hệ thống được cấu hình để **tự động khởi tạo** cơ sở dữ liệu và dữ liệu mẫu ngay khi bạn nhấn chạy.
 
-### Cách 1: Clone từ GitHub và chạy
-1. **Mở terminal** và clone repository:
-   ```bash
-   git clone https://github.com/your-username/story-reading-system.git
-   cd story-reading-system/BE
-   ```
-2. **Khôi phục các gói (NuGet Packages):**
-   ```bash
-   dotnet restore
-   ```
-3. **Cập nhật cơ sở dữ liệu (Migration):**
-   *Đảm bảo chuỗi kết nối trong `appsettings.json` đã đúng với SQL Server của bạn.*
-   ```bash
-   dotnet ef database update
-   ```
-4. **Chạy ứng dụng:**
-   ```bash
-   dotnet run
-   ```
-   **Hoặc**
-   - Vào `visual studio` mở `BE.sln` trong thư mục `BE` và ấn **f5** (chế độ https) để chạy
-
-### Cách 2: Chạy khi đã có sẵn Project trên máy
-1. **Mở thư mục `BE`** của project bằng Terminal hoặc Command Prompt:
-   ```bash
-   cd path/to/story-reading-system/BE
-   ```
-2. **Khôi phục và chạy:**
-   ```bash
-   dotnet restore
-   dotnet run
-   ```
-   **Hoặc**
-   ```bash
-   dotnet restore
-   ```
-   - Vào `visual studio` mở `BE.sln` trong thư mục `BE` và ấn **f5** (chế độ https) để chạy
-
-> **Lưu ý:** Sau khi chạy thành công, Backend mặc định sẽ chạy tại: `https://localhost:7210` hoặc `http://localhost:7210`. Bạn có thể truy cập `https://localhost:7210/swagger` để xem tài liệu API.
+1. **Mở Project:** 
+   - Truy cập thư mục `BE` và mở file `BE.sln` bằng Visual Studio 2022.
+2. **Cấu hình Database (Tùy chọn):** 
+   - Mặc định hệ thống sử dụng `(localdb)\mssqllocaldb`. Bạn có thể kiểm tra hoặc thay đổi tại `appsettings.json`.
+3. **Chạy ứng dụng:**
+   - Nhấn **F5** hoặc nút **Start (mũi tên xanh)** trên thanh công cụ của Visual Studio.
+4. **Kiểm tra kết quả:**
+   - Visual Studio sẽ tự động mở trình duyệt tại địa chỉ `https://localhost:7210/swagger`.
+   - **Tự động hóa:** Lúc này, Database đã được tự động tạo và các dữ liệu mẫu (Truyện, Chương, User) đã được insert vào hệ thống.
 
 ---
 
-## Hướng dẫn chạy Frontend (HTML/CSS/JS)
+## 🌐 Hướng dẫn chạy Frontend (HTML/CSS/JS)
 
-Frontend được viết bằng mã nguồn thuần, cách tốt nhất để chạy là sử dụng extension **Live Server** trong VS Code để tránh lỗi CORS và quản lý URL dễ dàng hơn.
-
-### Các bước thực hiện:
-1. **Mở VS Code**, chọn **File > Open Folder...** và mở thư mục `FE`.
-2. **Cài đặt Live Server:**
-   - Nhấn `Ctrl+Shift+X` để mở cửa sổ Extensions.
-   - Tìm kiếm từ khóa **"Live Server"** (của tác giả Ritwick Dey).
-   - Nhấn **Install**.
-3. **Khởi chạy:**
-   - Mở file `index.html` trong thư mục `FE`.
-   - **Cách 1:** Chuột phải vào bất kỳ đâu trong file `index.html` và chọn **Open with Live Server**.
-   - **Cách 2:** Nhấn vào nút **Go Live** ở góc dưới cùng bên phải của cửa sổ VS Code.
-4. **Truy cập:** Trình duyệt sẽ tự động mở trang web tại địa chỉ mặc định là: `http://127.0.0.1:5500/index.html`.
+1. **Mở thư mục `FE`** bằng Visual Studio Code.
+2. **Khởi chạy Live Server:**
+   - Mở file `index.html`.
+   - Chuột phải chọn **Open with Live Server** hoặc nhấn nút **Go Live** ở góc dưới bên phải màn hình.
+3. **Truy cập:** Trình duyệt sẽ mở trang web tại `http://127.0.0.1:5500/index.html`.
 
 ---
 
-## Cấu hình quan trọng
-- **Backend URL:** Nếu Backend chạy ở cổng khác cổng `7210`, hãy cập nhật biến `BACKEND_URL` trong các file JavaScript tại thư mục `FE/js/`.
-- **Database:** Bạn có thể thay đổi chuỗi kết nối tại `BE/appsettings.json`.
-
-```json
-"DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=StoryReaderDB;Trusted_Connection=True;"
-```
+## ⚙️ Cấu hình quan trọng
+- **Cơ sở dữ liệu:** Chuỗi kết nối nằm trong `BE/appsettings.json`.
+  ```json
+  "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=StoryReaderDB;Trusted_Connection=True;"
+  ```
+- **Kết nối FE-BE:** Nếu Backend chạy ở cổng khác `7210`, hãy cập nhật `BACKEND_URL` trong các file JavaScript tại thư mục `FE/js/`.

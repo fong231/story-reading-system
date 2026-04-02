@@ -86,4 +86,11 @@ app.MapControllers();
 
 app.MapHub<NotificationHub>("/notificationHub");
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<StoryReaderDbContext>();
+    context.Database.Migrate();
+}
+
 app.Run();
