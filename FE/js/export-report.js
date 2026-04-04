@@ -36,10 +36,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const startDate = document.getElementById('start-date').value;
         const endDate = document.getElementById('end-date').value;
 
-        if (!storyId) return showToast("Vui lòng chọn truyện!", "info");
-
         try {
-            const url = `${BACKEND_URL}/api/Reports/Author/${currentUser.userId}?type=${type}&startDate=${startDate}&endDate=${endDate}&storyId=${storyId}`;
+            let url = `${BACKEND_URL}/api/Reports/Author/${currentUser.userId}?type=${type}&startDate=${startDate}&endDate=${endDate}`;
+            if (storyId) {
+                url += `&storyId=${storyId}`;
+            }
+            
             const res = await fetch(url);
             
             if (res.ok) {

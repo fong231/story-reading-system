@@ -8,7 +8,7 @@ namespace BE.Services
     // ================================================================
     public interface IReportService
     {
-        Task<byte[]> GenerateReport(int authorId, DateTime startDate, DateTime endDate, string reportType);
+        Task<byte[]> GenerateReport(int authorId, DateTime startDate, DateTime endDate, string reportType, int? storyId = null);
     }
 
     public class ReportService : IReportService
@@ -20,7 +20,7 @@ namespace BE.Services
             _context = context;
         }
 
-        public async Task<byte[]> GenerateReport(int authorId, DateTime startDate, DateTime endDate, string reportType)
+        public async Task<byte[]> GenerateReport(int authorId, DateTime startDate, DateTime endDate, string reportType, int? storyId = null)
         {
             var reportTemplate = reportType.ToLower() switch
             {
@@ -28,7 +28,7 @@ namespace BE.Services
                 "viewgrowth" => new ViewGrowthReport(_context),
                 _ => throw new ArgumentException("Invalid report type")
             };
-            return await reportTemplate.GenerateReportAsync(authorId, startDate, endDate);
+            return await reportTemplate.GenerateReportAsync(authorId, startDate, endDate, storyId);
         }
     }
 }

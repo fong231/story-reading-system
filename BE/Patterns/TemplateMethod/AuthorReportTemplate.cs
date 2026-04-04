@@ -16,13 +16,13 @@ namespace BE.Patterns.TemplateMethod
         }
 
         // TEMPLATE METHOD - Định nghĩa skeleton algorithm
-        public async Task<byte[]> GenerateReportAsync(int authorId, DateTime startDate, DateTime endDate)
+        public async Task<byte[]> GenerateReportAsync(int authorId, DateTime startDate, DateTime endDate, int? storyId = null)
         {
             // 1. Mở kết nối Database (cố định)
             await OpenDatabaseConnection();
 
             // 2. Truy vấn dữ liệu (trừu tượng - mỗi report khác nhau)
-            var data = await QueryDataAsync(authorId, startDate, endDate);
+            var data = await QueryDataAsync(authorId, startDate, endDate, storyId);
 
             // 3. Tính toán chỉ số (trừu tượng - mỗi report khác nhau)
             var calculatedData = CalculateMetrics(data);
@@ -52,7 +52,7 @@ namespace BE.Patterns.TemplateMethod
         }
 
         // Abstract methods - bắt buộc override
-        protected abstract Task<object> QueryDataAsync(int authorId, DateTime startDate, DateTime endDate);
+        protected abstract Task<object> QueryDataAsync(int authorId, DateTime startDate, DateTime endDate, int? storyId = null);
         protected abstract object CalculateMetrics(object rawData);
         protected abstract string FormatReport(object calculatedData);
 
