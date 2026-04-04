@@ -1,5 +1,5 @@
 using BE.Models;
-using BE.Patterns.TemplateMethod;
+using BE.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BE.Controllers
@@ -26,13 +26,8 @@ namespace BE.Controllers
             try
             {
                 // TEMPLATE METHOD PATTERN: Sử dụng template
-                var reportTemplate = type.ToLower() switch
-                {
-                    "revenue" => (AuthorReportTemplate)new RevenueReport(_context),
-                    "viewgrowth" => new ViewGrowthReport(_context),
-                    _ => throw new ArgumentException("Invalid report type")
-                };
-                var fileBytes = await reportTemplate.GenerateReportAsync(authorId, startDate, endDate);
+                var report = new ReportService(_context);
+                var fileBytes = await report.GenerateReport(authorId, startDate, endDate, type);
 
                 var fileName = $"{type}_report_{authorId}_{DateTime.UtcNow:yyyyMMdd}.txt";
 

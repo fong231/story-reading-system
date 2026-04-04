@@ -16,12 +16,12 @@ namespace BE.Services
     public class ChapterService : IChapterService
     {
         private readonly StoryReaderDbContext _context;
-        private readonly NotificationService _notificationService;
+        private readonly IStoryObserver _storyObserver;
 
-        public ChapterService(StoryReaderDbContext context, NotificationService notificationService)
+        public ChapterService(StoryReaderDbContext context, IStoryObserver storyObserver)
         {
             _context = context;
-            _notificationService = notificationService;
+            _storyObserver = storyObserver;
         }
 
         public async Task<IEnumerable<object>> GetChaptersByStoryAsync(int storyId)
@@ -94,7 +94,7 @@ namespace BE.Services
 
             // Notify followers
             var message = $"Chương mới \"{chapter.Title}\" vừa được cập nhật!";
-            await _notificationService.NotifyFollowersAsync(storyId, message, chapter.ChapterId);
+            await _storyObserver.NotifyFollowersAsync(storyId, message, chapter.ChapterId);
 
             return chapter;
         }

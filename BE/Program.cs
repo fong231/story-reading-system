@@ -2,7 +2,6 @@ using BE.Models;
 using BE.Patterns.Factory;
 using BE.Patterns.Observer;
 using BE.Patterns.Singleton;
-using BE.Patterns.TemplateMethod;
 using BE.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +29,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStoryService, StoryService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<IReadingModeService, ReadingModeService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // FACTORY PATTERN - Story Factory
 builder.Services.AddScoped<IStoryFactory, StoryFactory>();
@@ -37,8 +37,8 @@ builder.Services.AddScoped<IStoryFactory, StoryFactory>();
 // SINGLETON PATTERN - Reading Progress Manager
 builder.Services.AddScoped<IReadingProgressManager, ReadingProgressManager>();
 
-// OBSERVER PATTERN - Notification Service
-builder.Services.AddScoped<NotificationService>();
+// OBSERVER PATTERN - Story Subject
+builder.Services.AddScoped<IStoryObserver, StoryObserver>();
 
 // TEMPLATE METHOD PATTERN - Report Factory
 builder.Services.AddScoped<IReportService, ReportService>();

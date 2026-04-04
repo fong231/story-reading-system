@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using BE.Patterns.Observer;
+using BE.Services;
 
 namespace BE.Controllers
 {
@@ -7,9 +8,9 @@ namespace BE.Controllers
     [Route("api/[controller]")]
     public class NotificationsController : ControllerBase
     {
-        private readonly NotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
-        public NotificationsController(NotificationService notificationService)
+        public NotificationsController(INotificationService notificationService)
         {
             _notificationService = notificationService;
         }

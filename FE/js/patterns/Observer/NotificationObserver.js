@@ -1,4 +1,4 @@
-// js/patterns/Observer.js
+// FE/js/patterns/Observer/NotificationObserver.js
 
 class NotificationObserver {
     constructor(badgeElementId) {

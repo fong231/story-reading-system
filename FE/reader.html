@@ -112,9 +112,18 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/patterns/Strategy.js"></script>
-    <script src="js/patterns/Command.js"></script>
-    <script src="js/patterns/Observer.js"></script>
+    <!-- Patterns -->
+    <script src="js/patterns/Strategy/IReadingStrategy.js"></script>
+    <script src="js/patterns/Strategy/DayScrollStrategy.js"></script>
+    <script src="js/patterns/Strategy/NightScrollStrategy.js"></script>
+    <script src="js/patterns/Strategy/DayFlipStrategy.js"></script>
+    <script src="js/patterns/Strategy/NightFlipStrategy.js"></script>
+
+    <script src="js/patterns/Command/ICommand.js"></script>
+    <script src="js/patterns/Command/ChangeReadingModeCommand.js"></script>
+    <script src="js/patterns/Command/SettingsInvoker.js"></script>
+
+    <script src="js/patterns/Observer/NotificationObserver.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
