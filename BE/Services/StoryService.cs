@@ -137,19 +137,12 @@ namespace BE.Services
 
         public async Task<Story> CreateStoryAsync(string title, string description, string coverImage, int authorId, int categoryId)
         {
-            try
-            {
-                var story = _storyFactory.CreateDbStory(title, description, authorId, categoryId);
-                if (!string.IsNullOrEmpty(coverImage)) story.CoverImage = coverImage;
+            var story = _storyFactory.CreateDbStory(title, description, authorId, categoryId);
+            if (!string.IsNullOrEmpty(coverImage)) story.CoverImage = coverImage;
 
-                _context.Stories.Add(story);
-                await _context.SaveChangesAsync();
-                return story;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            _context.Stories.Add(story);
+            await _context.SaveChangesAsync();
+            return story;
         }
 
         public async Task<bool> UpdateStoryAsync(int id, string title, string description, string coverImage, string status)
