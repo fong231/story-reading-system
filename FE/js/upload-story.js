@@ -138,22 +138,23 @@ document.getElementById("btn-create-story").addEventListener("click", async () =
         return showToast("Vui lòng nhập đầy đủ tên truyện và mô tả!", "info");
     }
 
+    if (!selectedCoverFile) {
+        return showToast("Vui lòng chọn ảnh bìa cho truyện!", "info");
+    }
+
     // Sử dụng FormData để gửi cả file và text
     const formData = new FormData();
     formData.append("Title", title);
     formData.append("Description", description);
     formData.append("CategoryId", categoryId);
     formData.append("AuthorId", user.userId);
-    
-    if (selectedCoverFile) {
-        formData.append("CoverFile", selectedCoverFile);
-    }
+    formData.append("CoverFile", selectedCoverFile);
 
     try {
         showToast("Đang tạo truyện...", "info");
         const res = await fetch(`${BACKEND_URL}/api/Stories`, {
             method: "POST",
-            body: formData // Fetch sẽ tự thiết lập Content-Type là multipart/form-data
+            body: formData
         });
 
         if (res.ok) {
@@ -174,7 +175,8 @@ document.getElementById("btn-create-story").addEventListener("click", async () =
                 updateNextChapterNumber(selectStory.value);
             }
         } else {
-            showToast("Có lỗi xảy ra khi tạo truyện.", "error");
+            const errorMsg = await res.text();
+            showToast(errorMsg || "Có lỗi xảy ra khi tạo truyện.", "error");
         }
     } catch (error) {
         showToast("Lỗi kết nối máy chủ!", "error");

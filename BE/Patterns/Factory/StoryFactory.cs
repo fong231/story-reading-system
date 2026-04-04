@@ -42,25 +42,32 @@ namespace BE.Patterns.Factory
         // Create database Story entity (for EF Core)
         public Story CreateDbStory(string title, string description, int authorId, int categoryId)
         {
-            // Create polymorphic story first
-            var storyBase = CreateStory(title, description, authorId, categoryId);
-
-            // Map to database entity
-            var dbStory = new Story
+            try
             {
-                Title = storyBase.Title,
-                Description = storyBase.Description + $"\n[{storyBase.GetSpecialFeature()}]",
-                AuthorId = storyBase.AuthorId,
-                CategoryId = storyBase.CategoryId,
-                ViewCount = storyBase.ViewCount,
-                AverageRating = storyBase.AverageRating,
-                TotalRatings = storyBase.TotalRatings,
-                Status = storyBase.Status,
-                CreatedAt = storyBase.CreatedAt,
-                IsActive = storyBase.IsActive
-            };
+                // Create polymorphic story first
+                var storyBase = CreateStory(title, description, authorId, categoryId);
 
-            return dbStory;
+                // Map to database entity
+                var dbStory = new Story
+                {
+                    Title = storyBase.Title,
+                    Description = storyBase.Description + $"\n[{storyBase.GetSpecialFeature()}]",
+                    AuthorId = storyBase.AuthorId,
+                    CategoryId = storyBase.CategoryId,
+                    ViewCount = storyBase.ViewCount,
+                    AverageRating = storyBase.AverageRating,
+                    TotalRatings = storyBase.TotalRatings,
+                    Status = storyBase.Status,
+                    CreatedAt = storyBase.CreatedAt,
+                    IsActive = storyBase.IsActive
+                };
+
+                return dbStory;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public IStoryCategory GetStoryType(int categoryId)

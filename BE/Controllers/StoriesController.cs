@@ -60,6 +60,12 @@ namespace BE.Controllers
         {
             string coverImageUrl = dto.CoverImage; // Mặc định dùng URL nếu có
 
+            // Kiểm tra xem đã chọn ảnh chưa
+            if (dto.CoverFile == null || dto.CoverFile.Length == 0)
+            {
+                return BadRequest("Vui lòng chọn ảnh bìa cho truyện!");
+            }
+
             // Xử lý upload file nếu có
             if (dto.CoverFile != null && dto.CoverFile.Length > 0)
             {
