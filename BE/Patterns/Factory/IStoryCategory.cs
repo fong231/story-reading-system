@@ -20,7 +20,8 @@ namespace BE.Patterns.Factory
         public bool IsActive { get; set; }
 
         // Template method - mỗi loại story có cách validate riêng
-        public abstract bool Validate();
+        // Trả về null nếu thành công, hoặc string chứa lỗi cụ thể nếu thất bại
+        public abstract string Validate();
 
         // Template method - mỗi loại story có logic đặc thù
         public abstract string GetSpecialFeature();

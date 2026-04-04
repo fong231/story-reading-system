@@ -2,10 +2,11 @@ namespace BE.Patterns.Factory
 {
     public class DetectiveStory : IStoryCategory
     {
-        public override bool Validate()
+        public override string Validate()
         {
-            // Detective stories might need mystery elements
-            return !string.IsNullOrEmpty(Title) && Description?.Length > 50;
+            if (string.IsNullOrEmpty(Title)) return "Tên truyện trinh thám không được để trống!";
+            if (Description?.Length <= 50) return "Truyện trinh thám cần mô tả chi tiết hơn (ít nhất 50 ký tự) để gợi mở tình tiết!";
+            return null;
         }
 
         public override string GetSpecialFeature()

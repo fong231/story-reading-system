@@ -2,10 +2,10 @@ namespace BE.Patterns.Factory
 {
     public class RomanceStory : IStoryCategory
     {
-        public override bool Validate()
+        public override string Validate()
         {
-            // Romance stories might have relationship validation
-            return !string.IsNullOrEmpty(Title);
+            if (string.IsNullOrEmpty(Title)) return "Tên truyện ngôn tình không được để trống!";
+            return null;
         }
 
         public override string GetSpecialFeature()

@@ -30,9 +30,10 @@ namespace BE.Patterns.Factory
             story.CreatedAt = DateTime.UtcNow;
             story.IsActive = true;
 
-            if (!story.Validate())
+            string validationError = story.Validate();
+            if (validationError != null)
             {
-                throw new InvalidOperationException($"Story validation failed for {story.GetType().Name}");
+                throw new InvalidOperationException(validationError);
             }
 
             return story;

@@ -2,10 +2,11 @@ namespace BE.Patterns.Factory
 {
     public class ActionStory : IStoryCategory
     {
-        public override bool Validate()
+        public override string Validate()
         {
-            // Action stories might need action tag validation
-            return !string.IsNullOrEmpty(Title) && Title.Length >= 3;
+            if (string.IsNullOrEmpty(Title)) return "Tên truyện hành động không được để trống!";
+            if (Title.Length < 3) return "Tên truyện hành động phải có ít nhất 3 ký tự!";
+            return null;
         }
 
         public override string GetSpecialFeature()
