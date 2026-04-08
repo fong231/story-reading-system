@@ -35,7 +35,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IStoryFactory, StoryFactory>();
 
 // SINGLETON PATTERN - Reading Progress Manager
-builder.Services.AddScoped<IReadingProgressManager, ReadingProgressManager>();
+builder.Services.AddSingleton<IReadingProgressManager>(ReadingProgressManager.Instance);
 
 // OBSERVER PATTERN - Story Subject
 builder.Services.AddScoped<IStoryObserver, StoryObserver>();
@@ -85,6 +85,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<NotificationHub>("/notificationHub");
+
+// Initialize Singleton Pattern with ServiceProvider
+ReadingProgressManager.Initialize(app.Services);
 
 using (var scope = app.Services.CreateScope())
 {

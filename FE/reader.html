@@ -111,6 +111,16 @@
     </main>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <!-- READING PROGRESS BAR (SINGLETON UI) -->
+    <div id="reading-progress-footer" class="progress-footer">
+        <div class="progress-row">
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <span id="reading-percentage" class="percentage-text">0%</span>
+        </div>
+    </div>
+
     <script src="js/utils.js"></script>
     <!-- Patterns -->
     <script src="js/patterns/Strategy/IReadingStrategy.js"></script>
@@ -119,6 +129,7 @@
     <script src="js/patterns/Strategy/DayFlipStrategy.js"></script>
     <script src="js/patterns/Strategy/NightFlipStrategy.js"></script>
 
+    <script src="js/patterns/Singleton/ReadingProgressManager.js"></script>
     <script src="js/patterns/Command/ICommand.js"></script>
     <script src="js/patterns/Command/ChangeReadingModeCommand.js"></script>
     <script src="js/patterns/Command/SettingsInvoker.js"></script>

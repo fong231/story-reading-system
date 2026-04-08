@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using BE.Models;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BE.Patterns.Singleton
 {
     // ================================================================
-    // SINGLETON PATTERN - Reading Progress Manager
-    // Ensures only one reading progress instance per user
+    // SINGLETON PATTERN - Classic Implementation (Thread-Safe)
+    // Đảm bảo chỉ có DUY NHẤT 1 instance manager trong suốt phiên làm việc.
     // ================================================================
     public interface IReadingProgressManager
     {
@@ -14,73 +15,115 @@ namespace BE.Patterns.Singleton
         Task IncrementStatsAsync(int userId, bool isNewStory, bool isNewChapter);
     }
 
-    public class ReadingProgressManager : IReadingProgressManager
+    public sealed class ReadingProgressManager : IReadingProgressManager
     {
-        private readonly StoryReaderDbContext _context;
+        // 1. Static Instance (Classic Singleton)
+        private static ReadingProgressManager _instance = null;
+        private static readonly object _lock = new object();
 
-        public ReadingProgressManager(StoryReaderDbContext context)
+        // Cần IServiceProvider để lấy DbContext vì DbContext có Scope ngắn hơn Singleton
+        private static IServiceProvider _serviceProvider;
+
+        // 2. Private constructor
+        private ReadingProgressManager() { }
+
+        // 3. Truy cập instance qua thuộc tính static
+        public static ReadingProgressManager Instance
         {
-            _context = context;
+            get
+            {
+                if (_instance == null)
+                {
+                    lock (_lock)
+                    {
+                        if (_instance == null)
+                        {
+                            _instance = new ReadingProgressManager();
+                        }
+                    }
+                }
+                return _instance;
+            }
         }
 
-        // Get or create SINGLETON instance for user
+        // Phương thức để "tiêm" ServiceProvider vào Singleton khi khởi tạo App
+        public static void Initialize(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        private StoryReaderDbContext GetDbContext()
+        {
+            if (_serviceProvider == null)
+                throw new InvalidOperationException("ReadingProgressManager must be initialized with IServiceProvider.");
+            
+            // Vì Singleton sống lâu hơn DbContext, ta phải tạo 1 Scope mới để lấy DbContext
+            var scope = _serviceProvider.CreateScope();
+            return scope.ServiceProvider.GetRequiredService<StoryReaderDbContext>();
+        }
+
+        // --- CÁC HÀM NGHIỆP VỤ (GIỮ NGUYÊN TÊN VÀ CHỮ KÝ CŨ) ---
+
         public async Task<ReadingProgress> GetOrCreateProgressAsync(int userId)
         {
-            // Try to get existing instance
-            var progress = await _context.ReadingProgresses
-                .Include(p => p.CurrentStory)
-                .Include(p => p.CurrentChapter)
-                .FirstOrDefaultAsync(p => p.UserId == userId);
-
-            if (progress == null)
+            using (var context = GetDbContext())
             {
-                // Create SINGLETON instance if not exists
-                progress = new ReadingProgress
+                var progress = await context.ReadingProgresses
+                    .Include(p => p.CurrentStory)
+                    .Include(p => p.CurrentChapter)
+                    .FirstOrDefaultAsync(p => p.UserId == userId);
+
+                if (progress == null)
                 {
-                    UserId = userId,
-                    TotalStoriesRead = 0,
-                    TotalChaptersRead = 0,
-                    LastReadPosition = 0,
-                    LastReadAt = DateTime.UtcNow,
-                    CreatedAt = DateTime.UtcNow
-                };
+                    progress = new ReadingProgress
+                    {
+                        UserId = userId,
+                        TotalStoriesRead = 0,
+                        TotalChaptersRead = 0,
+                        LastReadPosition = 0,
+                        LastReadAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow
+                    };
 
-                _context.ReadingProgresses.Add(progress);
-                await _context.SaveChangesAsync();
+                    context.ReadingProgresses.Add(progress);
+                    await context.SaveChangesAsync();
+                }
+
+                return progress;
             }
-
-            return progress;
         }
 
         public async Task UpdateProgressAsync(int userId, int storyId, int chapterId, int position)
         {
-            var progress = await GetOrCreateProgressAsync(userId);
+            using (var context = GetDbContext())
+            {
+                var progress = await GetOrCreateProgressAsync(userId);
+                // Vì progress được lấy từ Context cũ đã bị dispose, ta cần attach nó lại hoặc lấy lại
+                var dbProgress = await context.ReadingProgresses.FindAsync(progress.ProgressId);
 
-            progress.CurrentStoryId = storyId;
-            progress.CurrentChapterId = chapterId;
-            progress.LastReadPosition = position;
-            progress.LastReadAt = DateTime.UtcNow;
-            progress.UpdatedAt = DateTime.UtcNow;
+                dbProgress.CurrentStoryId = storyId;
+                dbProgress.CurrentChapterId = chapterId;
+                dbProgress.LastReadPosition = position;
+                dbProgress.LastReadAt = DateTime.UtcNow;
+                dbProgress.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task IncrementStatsAsync(int userId, bool isNewStory, bool isNewChapter)
         {
-            var progress = await GetOrCreateProgressAsync(userId);
-
-            if (isNewStory)
+            using (var context = GetDbContext())
             {
-                progress.TotalStoriesRead++;
-            }
+                var progress = await GetOrCreateProgressAsync(userId);
+                var dbProgress = await context.ReadingProgresses.FindAsync(progress.ProgressId);
 
-            if (isNewChapter)
-            {
-                progress.TotalChaptersRead++;
-            }
+                if (isNewStory) dbProgress.TotalStoriesRead++;
+                if (isNewChapter) dbProgress.TotalChaptersRead++;
 
-            progress.UpdatedAt = DateTime.UtcNow;
-            await _context.SaveChangesAsync();
+                dbProgress.UpdatedAt = DateTime.UtcNow;
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

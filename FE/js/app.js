@@ -137,6 +137,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     // 3. HÀM HỖ TRỢ
+    const updateReadingProgressUI = () => {
+        const content = document.getElementById('chapter-content');
+        let scrolled = 0;
+
+        if (content && content.classList.contains('mode-flip')) {
+            // Tính toán cho chế độ lật trang (cuộn ngang)
+            const scrollWidth = content.scrollWidth - content.clientWidth;
+            if (scrollWidth > 0) {
+                scrolled = (content.scrollLeft / scrollWidth) * 100;
+            }
+        } else {
+            // Tính toán cho chế độ cuộn dọc (mặc định)
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            if (height > 0) {
+                scrolled = (winScroll / height) * 100;
+            }
+        }
+        
+        // Gọi đến Singleton để cập nhật trạng thái
+        if (window.readingManager) {
+            window.readingManager.update(
+                new URLSearchParams(window.location.search).get('storyId'),
+                new URLSearchParams(window.location.search).get('chapterId'),
+                scrolled || 0
+            );
+        }
+    };
+
+    window.onscroll = function() { updateReadingProgressUI(); };
+    document.getElementById('chapter-content').addEventListener('scroll', updateReadingProgressUI);
+
     const applyToUI = (s) => {
         readerContext.setReadingMode(s.theme, s.navMode);
         readerContext.setFontSize(s.fontSize);
@@ -186,6 +218,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     applyToUI(currentSettings);
     syncInputs(currentSettings);
+    updateReadingProgressUI();
 
     // Quan trọng: Reset lịch sử undo/redo khi mới vào để mốc đầu tiên là dữ liệu từ Backend
     invoker.clearHistory();

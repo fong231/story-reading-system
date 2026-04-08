@@ -13,7 +13,7 @@ namespace BE.Patterns.Observer
         Task NotifyFollowersAsync(int storyId, string message, int? chapterId = null);
     }
     
-    public class StoryObserver : IStoryObserver
+    public class StoryObserver : IStoryObserver // StorySubject
     {
         private readonly StoryReaderDbContext _context;
         private readonly IHubContext<NotificationHub> _hubContext;
