@@ -8,60 +8,28 @@ const CURRENT_CHAPTER_ID = parseInt(urlParams.get('chapterId'));
 
 let IS_BOOKMARKED = false;
 
-class ReaderContext {
-    constructor(container) { this.container = container; this.strategy = null; }
-    setStrategy(strategy) { this.strategy = strategy; this.strategy.apply(this.container); }
-
-    setReadingMode(theme, nav) {
-        const modeString = `${theme}-${nav}`;
-        switch (modeString) {
-            case 'day-scroll': this.setStrategy(new DayScrollStrategy()); break;
-            case 'night-scroll': this.setStrategy(new NightScrollStrategy()); break;
-            case 'day-flip': this.setStrategy(new DayFlipStrategy()); break;
-            case 'night-flip': this.setStrategy(new NightFlipStrategy()); break;
-        }
-    }
-
-    setFontSize(size) { this.container.style.fontSize = size + 'px'; this.strategy && this.strategy.recalculateHeight(this.container); }
-    setFontFamily(family) { this.container.style.fontFamily = family; }
-    setLineHeight(height) { this.container.style.lineHeight = height; this.strategy && this.strategy.recalculateHeight(this.container); }
-
-    nextPage() {
-        const content = document.getElementById('chapter-content');
-        if (content && content.classList.contains('mode-flip')) {
-            const width = content.clientWidth;
-            const gap = 40;
-            const step = width + gap;
-
-            const currentPage = Math.round(content.scrollLeft / step);
-            const targetScroll = (currentPage + 1) * step;
-
-            content.scrollTo({
-                left: targetScroll,
-                behavior: 'smooth'
-            });
-        }
-    }
-
-    prevPage() {
-        const content = document.getElementById('chapter-content');
-        if (content && content.classList.contains('mode-flip')) {
-            const width = content.clientWidth;
-            const gap = 40;
-            const step = width + gap;
-
-            const currentPage = Math.round(content.scrollLeft / step);
-            const targetScroll = (currentPage - 1) * step;
-
-            content.scrollTo({
-                left: Math.max(0, targetScroll),
-                behavior: 'smooth'
-            });
-        }
-    }
-}
-
 document.addEventListener("DOMContentLoaded", async () => {
+    // Hàm lưu tiến trình đọc ngay lập tức (dùng khi chuyển trang hoặc thoát)
+    const saveCurrentProgress = async () => {
+        // Xác định vị trí cuộn dựa trên chế độ đọc hiện tại
+        let position = 0;
+        if (currentSettings.navMode === 'flip') {
+            const content = document.getElementById('chapter-content');
+            if (content) position = Math.round(content.scrollLeft);
+        } else {
+            position = Math.round(window.scrollY);
+        }
+
+        try {
+            await fetch(`${BACKEND_URL}/api/Reading/Progress`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                keepalive: true, // Đảm bảo request được gửi thành công kể cả khi trang đang bị đóng
+                body: JSON.stringify({ userId: CURRENT_USER_ID, storyId: CURRENT_STORY_ID, chapterId: CURRENT_CHAPTER_ID, position: position })
+            });
+        } catch(e) {}
+    };
+
     // 1. TẢI NỘI DUNG CHƯƠNG TỪ BE + ĐIỀU HƯỚNG CHƯƠNG PREV/NEXT
     if (CURRENT_CHAPTER_ID) {
         const res = await fetch(`${BACKEND_URL}/api/Chapters/${CURRENT_CHAPTER_ID}`);
@@ -90,7 +58,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const prevChapter = chapters[idx - 1];
                     btnPrev.disabled = false;
                     btnPrev.title = `Chương ${prevChapter.chapterNumber}: ${prevChapter.title}`;
-                    btnPrev.addEventListener("click", () => {
+                    btnPrev.addEventListener("click", async () => {
+                        await saveCurrentProgress();
                         window.location.href = `reader.html?storyId=${CURRENT_STORY_ID}&chapterId=${prevChapter.chapterId}`;
                     });
                 }
@@ -100,7 +69,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     const nextChapter = chapters[idx + 1];
                     btnNext.disabled = false;
                     btnNext.title = `Chương ${nextChapter.chapterNumber}: ${nextChapter.title}`;
-                    btnNext.addEventListener("click", () => {
+                    btnNext.addEventListener("click", async () => {
+                        await saveCurrentProgress();
                         window.location.href = `reader.html?storyId=${CURRENT_STORY_ID}&chapterId=${nextChapter.chapterId}`;
                     });
                 }
@@ -170,10 +140,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById('chapter-content').addEventListener('scroll', updateReadingProgressUI);
 
     const applyToUI = (s) => {
+        // 1. Chụp lại phần trăm đọc hiện tại từ Singleton Bar trước khi thay đổi layout
+        let currentPercentage = 0;
+        if (window.readingManager) {
+            currentPercentage = window.readingManager.getProgress().percentage;
+        }
+
         readerContext.setReadingMode(s.theme, s.navMode);
         readerContext.setFontSize(s.fontSize);
         readerContext.setFontFamily(s.fontFamily);
         readerContext.setLineHeight(s.lineHeight);
+
+        // 2. Đợi DOM cập nhật kích thước xong thì cuộn về đúng phần trăm đó
+        setTimeout(() => {
+            const content = document.getElementById('chapter-content');
+            if (!content) return;
+
+            if (s.navMode === 'flip') {
+                const scrollWidth = content.scrollWidth - content.clientWidth;
+                if (scrollWidth > 0) {
+                    const rawLeft = (currentPercentage / 100) * scrollWidth;
+                    const step = content.clientWidth + 40; // Chiều rộng 1 trang + gap (40px)
+                    // Tính toán và snap về trang gần nhất chứa % nội dung đó
+                    const currentPage = Math.round(rawLeft / step);
+                    content.scrollTo({ left: currentPage * step, behavior: 'auto' });
+                }
+            } else {
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                if (height > 0) {
+                    window.scrollTo({ top: (currentPercentage / 100) * height, behavior: 'auto' });
+                }
+            }
+        }, 100);
     };
 
     const syncInputs = (s) => {
@@ -260,40 +258,49 @@ document.addEventListener("DOMContentLoaded", async () => {
             lineHeight: lineHeightSelect.value
         };
 
-        // Tạo Command để lưu vào Stack (phục vụ undo/redo)
-        const oldSettingsForCmd = { ...currentSettings, mode: `${currentSettings.theme}-${currentSettings.navMode}` };
-        const newSettingsForCmd = { ...newSettings, mode: `${newSettings.theme}-${newSettings.navMode}` };
+        // Kiểm tra xem cài đặt có thực sự thay đổi so với hiện tại không
+        const isChanged = newSettings.theme !== currentSettings.theme ||
+                          newSettings.navMode !== currentSettings.navMode ||
+                          newSettings.fontSize !== currentSettings.fontSize ||
+                          newSettings.fontFamily !== currentSettings.fontFamily ||
+                          newSettings.lineHeight !== currentSettings.lineHeight;
 
-        const cmd = new ChangeReadingModeCommand(readerContext, newSettingsForCmd, oldSettingsForCmd);
-        invoker.executeCommand(cmd);
+        if (isChanged) {
+            // Tạo Command để lưu vào Stack (phục vụ undo/redo)
+            const oldSettingsForCmd = { ...currentSettings, mode: `${currentSettings.theme}-${currentSettings.navMode}` };
+            const newSettingsForCmd = { ...newSettings, mode: `${newSettings.theme}-${newSettings.navMode}` };
 
-        // Cập nhật mốc cài đặt hiện tại
-        currentSettings = newSettings;
-        updateBtns();
+            const cmd = new ChangeReadingModeCommand(readerContext, newSettingsForCmd, oldSettingsForCmd);
+            invoker.executeCommand(cmd);
 
-        // Lưu vĩnh viễn lên Backend
-        const body = {
-            userId: CURRENT_USER_ID,
-            theme: newSettings.theme.charAt(0).toUpperCase() + newSettings.theme.slice(1),
-            navigationMode: newSettings.navMode.charAt(0).toUpperCase() + newSettings.navMode.slice(1),
-            fontSize: newSettings.fontSize,
-            fontFamily: newSettings.fontFamily,
-            lineHeight: parseFloat(newSettings.lineHeight)
-        };
+            // Cập nhật mốc cài đặt hiện tại
+            currentSettings = newSettings;
+            updateBtns();
 
-        try {
-            const res = await fetch(`${BACKEND_URL}/api/Reading/Mode`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body)
-            });
-            localStorage.setItem('reader_settings', JSON.stringify(currentSettings));
-            if (res.ok) {
-                showToast("Đã lưu cấu hình lên máy chủ!", "success");
+            // Lưu vĩnh viễn lên Backend
+            const body = {
+                userId: CURRENT_USER_ID,
+                theme: newSettings.theme.charAt(0).toUpperCase() + newSettings.theme.slice(1),
+                navigationMode: newSettings.navMode.charAt(0).toUpperCase() + newSettings.navMode.slice(1),
+                fontSize: newSettings.fontSize,
+                fontFamily: newSettings.fontFamily,
+                lineHeight: parseFloat(newSettings.lineHeight)
+            };
+
+            try {
+                const res = await fetch(`${BACKEND_URL}/api/Reading/Mode`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                localStorage.setItem('reader_settings', JSON.stringify(currentSettings));
+                if (res.ok) {
+                    showToast("Đã lưu cấu hình lên máy chủ!", "success");
+                }
+            } catch (e) {
+                console.error("Lỗi lưu backend", e);
+                showToast("Lỗi kết nối máy chủ!", "error");
             }
-        } catch (e) {
-            console.error("Lỗi lưu backend", e);
-            showToast("Lỗi kết nối máy chủ!", "error");
         }
 
         // Đóng modal mà không gọi lại applyToUI(currentSettings) của hàm closeModal mặc định
@@ -330,22 +337,36 @@ document.addEventListener("DOMContentLoaded", async () => {
         const progRes = await fetch(`${BACKEND_URL}/api/Reading/Progress/${CURRENT_USER_ID}`);
         if (progRes.ok) {
             const progData = await progRes.json();
-            if (progData.currentChapterId === CURRENT_CHAPTER_ID && progData.lastReadPosition > 0) {
-                window.scrollTo({ top: progData.lastReadPosition, behavior: 'smooth' });
+            // Sửa lại cách truy cập đúng cấu trúc JSON từ backend: currentChapter.chapterId
+            if (progData.currentChapter && progData.currentChapter.chapterId === CURRENT_CHAPTER_ID && progData.lastReadPosition > 0) {
+                // Dùng setTimeout để đợi DOM (font chữ, dàn trang) render hoàn tất rồi mới cuộn
+                setTimeout(() => {
+                    // Kiểm tra chế độ đọc để cuộn đúng cách
+                    if (currentSettings.navMode === 'flip') {
+                        const content = document.getElementById('chapter-content');
+                        if (content) {
+                            content.scrollTo({ left: progData.lastReadPosition, behavior: 'smooth' });
+                        }
+                    } else {
+                        window.scrollTo({ top: progData.lastReadPosition, behavior: 'smooth' });
+                    }
+                }, 300);
             }
         }
     } catch (e) { }
 
     let scrollTimeout;
-    window.addEventListener("scroll", () => {
+    const debouncedSaveProgress = () => {
         if (scrollTimeout) clearTimeout(scrollTimeout);
         scrollTimeout = setTimeout(() => {
-            fetch(`${BACKEND_URL}/api/Reading/Progress`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: CURRENT_USER_ID, storyId: CURRENT_STORY_ID, chapterId: CURRENT_CHAPTER_ID, position: Math.round(window.scrollY) })
-            });
+            saveCurrentProgress();
         }, 2000);
+    };
+    window.addEventListener("scroll", debouncedSaveProgress);
+    document.getElementById('chapter-content').addEventListener('scroll', debouncedSaveProgress);
+
+    window.addEventListener("beforeunload", () => {
+        saveCurrentProgress();
     });
 
     const checkBookmarkStatus = async () => {
@@ -397,7 +418,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (e) { showToast("Lỗi kết nối!", "error"); }
     });
 
-    document.getElementById("btn-back").addEventListener("click", () => {
+    document.getElementById("btn-back").addEventListener("click", async () => {
+        await saveCurrentProgress();
         window.location.href = `story-detail.html?storyId=${CURRENT_STORY_ID}`;
     });
 

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="css/reader.css">
 </head>
 <body>
-    <header class="navbar">
+    <header class="navbar" style="position: sticky; top: 0; z-index: 1000;">
         <div class="logo" id="btn-back" style="cursor:pointer">⬅ Về</div>
         <div class="controls">            <!-- Nút bánh răng cài đặt -->
             <button id="btn-settings" style="font-size: 20px; background: none; border: none; color: white; cursor: pointer;">⚙️</button>
@@ -133,6 +133,7 @@
     <script src="js/patterns/Command/ICommand.js"></script>
     <script src="js/patterns/Command/ChangeReadingModeCommand.js"></script>
     <script src="js/patterns/Command/SettingsInvoker.js"></script>
+    <script src="js/patterns/Command/ReaderContext.js"></script>
 
     <script src="js/patterns/Observer/NotificationObserver.js"></script>
     <script src="js/app.js"></script>

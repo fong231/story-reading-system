@@ -82,3 +82,9 @@
 
 * Các lớp con như `RevenueReport` (Báo cáo doanh thu) hay `ViewGrowthReport` (Báo cáo lượt xem) chỉ cần ghi đè (override) các bước tính toán riêng biệt mà không phải viết lại quy trình xuất file.
 
+
+
+- Hiển thị danh sách truyện với các thể loại khác nhau.
+- Hỗ trợ đọc truyện với nhiều chế độ (ban ngày, ban đêm, cuộn, lật trang).
+- Cho phép người dùng đánh dấu chương đang đọc và tiếp tục lần sau.
+- Cung cấp tính năng bình luận, đánh giá truyện

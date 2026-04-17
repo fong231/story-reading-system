@@ -60,10 +60,14 @@ classDiagram
 
     %% 2. SINGLETON PATTERN (Backend & Frontend)
     namespace Singleton_Pattern {
+        class ReadingController {
+            +GetReadingProgress(userId: int): Task
+            +UpdateReadingProgress(dto: ProgressDto): Task
+        }
         class BE_ReadingProgressManager {
             -static instance: BE_ReadingProgressManager
             -BE_ReadingProgressManager()
-            +static Instance$ BE_ReadingProgressManager
+            +
             +UpdateProgressAsync(userId: int, storyId: int, chapterId: int, position: int) Task
         }
         class FE_ReadingProgressManager {
@@ -72,6 +76,7 @@ classDiagram
             +update(storyId: int, chapterId: int, percentage: number) void
         }
     }
+    ReadingController ..> BE_ReadingProgressManager : "Calls Instance methods"
 
     %% 3. TEMPLATE METHOD PATTERN (Backend)
     namespace Template_Method_Pattern {
@@ -196,16 +201,15 @@ classDiagram
             +FollowStoryAsync(userId: int, storyId: int): Task~bool~
             +UnfollowStoryAsync(userId: int, storyId: int): Task~bool~
         }
-        class NotificationObserver {
+        class NotificationHub {
             -connection: HubConnection
-            +addNotification(notification: object): void
-            +renderNotifications(): void
+            +SendStoryNotification(storyId: int, notification: object): Task
         }
     }
     ChaptersController --> IChapterService : "Inject via"
     IChapterService <|.. ChapterService
     ChapterService --> IStoryObserver : "Inject via"
-    StoryObserver ..> NotificationObserver : "Push Notification via SignalR"
+    StoryObserver ..> NotificationHub : "Push Notification via SignalR"
     IStoryObserver <|.. StoryObserver
     NotificationsController --> INotificationService : "Inject via"
 ```
