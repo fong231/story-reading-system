@@ -9,7 +9,7 @@ class DayFlipStrategy extends IReadingStrategy {
             container.style.fontFamily = "Georgia, serif";
             this.recalculateHeight(container);
         }
-        console.log("Applied: Day Flip Strategy");
+        console.log("[Strategy Pattern] Apply Day Flip Strategy");
     }
     recalculateHeight(_container) {
         const title = document.getElementById('chapter-title');

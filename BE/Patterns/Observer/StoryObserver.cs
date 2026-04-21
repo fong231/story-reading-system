@@ -29,6 +29,7 @@ namespace BE.Patterns.Observer
         // Notify all observers (followers) about new chapter
         public async Task NotifyFollowersAsync(int storyId, string message, int? chapterId = null)
         {
+            Console.WriteLine($"[Observer Pattern] Notify followers of Story: {storyId}");
             // Get all followers (observers) of this story
             var followers = await _context.StoryFollowers
                 .Where(sf => sf.StoryId == storyId)

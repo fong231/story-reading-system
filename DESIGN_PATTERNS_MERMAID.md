@@ -67,7 +67,6 @@ classDiagram
         class BE_ReadingProgressManager {
             -static instance: BE_ReadingProgressManager
             -BE_ReadingProgressManager()
-            +
             +UpdateProgressAsync(userId: int, storyId: int, chapterId: int, position: int) Task
         }
         class FE_ReadingProgressManager {

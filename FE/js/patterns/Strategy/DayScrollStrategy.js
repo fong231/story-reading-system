@@ -9,6 +9,6 @@ class DayScrollStrategy extends IReadingStrategy {
         }
         container.style.fontFamily = "Arial, sans-serif";
         this.recalculateHeight(container);
-        console.log("Applied: Day Scroll Strategy");
+        console.log("[Strategy Pattern] Apply Day Scroll Strategy");
     }
 }

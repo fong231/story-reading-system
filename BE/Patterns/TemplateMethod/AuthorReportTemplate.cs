@@ -18,6 +18,7 @@ namespace BE.Patterns.TemplateMethod
         // TEMPLATE METHOD - Định nghĩa skeleton algorithm
         public async Task<byte[]> GenerateReportAsync(int authorId, DateTime startDate, DateTime endDate, int? storyId = null)
         {
+            Console.WriteLine($"[Template Method Pattern] Generate Report for Author: {authorId}");
             // 1. Mở kết nối Database (cố định)
             await OpenDatabaseConnection();
 

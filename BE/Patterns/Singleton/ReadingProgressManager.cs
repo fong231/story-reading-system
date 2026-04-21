@@ -42,6 +42,7 @@ namespace BE.Patterns.Singleton
                         }
                     }
                 }
+                Console.WriteLine("[Singleton Pattern] Get BE ReadingProgressManager Instance");
                 return _instance;
             }
         }
@@ -95,6 +96,7 @@ namespace BE.Patterns.Singleton
 
         public async Task UpdateProgressAsync(int userId, int storyId, int chapterId, int position)
         {
+            Console.WriteLine($"[Singleton Pattern] Update progress for User: {userId}");
             using (var context = GetDbContext())
             {
                 var progress = await GetOrCreateProgressAsync(userId);

@@ -16,6 +16,7 @@ namespace BE.Patterns.Factory
     {
         public IStoryCategory CreateStory(string title, string description, int authorId, int categoryId)
         {
+            Console.WriteLine($"[Factory Pattern] Create Story with CategoryId: {categoryId}");
             IStoryCategory story = GetStoryType(categoryId);
 
             // Set common properties

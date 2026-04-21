@@ -9,7 +9,7 @@ class NightFlipStrategy extends IReadingStrategy {
             container.style.fontFamily = "Georgia, serif";
             this.recalculateHeight(container);
         }
-        console.log("Applied: Night Flip Strategy");
+        console.log("[Strategy Pattern] Apply Night Flip Strategy");
     }
     recalculateHeight(_container) {
         const title = document.getElementById('chapter-title');

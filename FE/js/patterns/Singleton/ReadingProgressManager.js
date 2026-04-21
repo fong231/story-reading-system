@@ -18,13 +18,14 @@
             };
 
             ReadingProgressManager.instance = this;
-            console.log("[Singleton FE] ReadingProgressManager initialized.");
+            console.log("[Singleton Pattern] Initialize FE ReadingProgressManager");
         }
 
         static getInstance() {
             if (!ReadingProgressManager.instance) {
                 ReadingProgressManager.instance = new ReadingProgressManager();
             }
+            console.log("[Singleton Pattern] Get FE ReadingProgressManager Instance");
             return ReadingProgressManager.instance;
         }
 

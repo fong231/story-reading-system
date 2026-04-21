@@ -26,7 +26,10 @@ namespace BE.Controllers
             var result = await _notificationService.FollowStoryAsync(dto.UserId, dto.StoryId);
 
             if (result)
+            {
+                Console.WriteLine($"[Observer Pattern] User {dto.UserId} followed story {dto.StoryId} successfully");
                 return Ok(new { message = "Followed story successfully" });
+            }
             else
                 return BadRequest(new { message = "Already following this story" });
         }
@@ -38,7 +41,10 @@ namespace BE.Controllers
             var result = await _notificationService.UnfollowStoryAsync(dto.UserId, dto.StoryId);
 
             if (result)
+            {
+                Console.WriteLine($"[Observer Pattern] User {dto.UserId} unfollowed story {dto.StoryId} successfully");
                 return Ok(new { message = "Unfollowed story successfully" });
+            }
             else
                 return NotFound(new { message = "Not following this story" });
         }

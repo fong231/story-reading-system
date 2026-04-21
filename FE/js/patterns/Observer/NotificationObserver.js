@@ -87,7 +87,7 @@ class NotificationObserver {
             .build();
 
         this.connection.on("ReceiveNotification", (notification) => {
-            console.log("🔔 CÓ THÔNG BÁO MỚI:", notification);
+            console.log("[Observer Pattern] 🔔 Receive Notification from SignalR:", notification);
             // Hiển thị Toast thông báo nhanh
             if (typeof showToast === 'function') {
                 showToast(notification.message || (typeof notification === 'string' ? notification : "Thông báo mới"), "info");

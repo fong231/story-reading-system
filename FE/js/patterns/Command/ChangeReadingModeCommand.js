@@ -6,12 +6,14 @@ class ChangeReadingModeCommand extends ICommand {
         this.oldSettings = oldSettings;
     }
     execute() { 
+        console.log("[Command Pattern] Execute ChangeReadingModeCommand");
         if (this.newSettings.mode) this.readerContext.setReadingMode(this.newSettings.mode);
         if (this.newSettings.fontSize) this.readerContext.setFontSize(this.newSettings.fontSize);
         if (this.newSettings.fontFamily) this.readerContext.setFontFamily(this.newSettings.fontFamily);
         if (this.newSettings.lineHeight) this.readerContext.setLineHeight(this.newSettings.lineHeight);
     }
     undo() { 
+        console.log("[Command Pattern] Undo ChangeReadingModeCommand");
         if (this.oldSettings.mode) this.readerContext.setReadingMode(this.oldSettings.mode);
         if (this.oldSettings.fontSize) this.readerContext.setFontSize(this.oldSettings.fontSize);
         if (this.oldSettings.fontFamily) this.readerContext.setFontFamily(this.oldSettings.fontFamily);

@@ -9,6 +9,6 @@ class NightScrollStrategy extends IReadingStrategy {
         }
         container.style.fontFamily = "Arial, sans-serif";
         this.recalculateHeight(container);
-        console.log("Applied: Night Scroll Strategy");
+        console.log("[Strategy Pattern] Apply Night Scroll Strategy");
     }
 }
